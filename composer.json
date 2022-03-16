@@ -2,6 +2,11 @@
     "require": {
         "symfony/console": "^6.0"
     },
+    "scripts": {
+        "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
+        "php-cs-fixer": "./vendor/bin/php-cs-fixer fix src",
+        "phpstan": "./vendor/bin/phpstan analyse src"
+    },
     "autoload": {
         "psr-4": {
             "Mdtt\\": "src"
