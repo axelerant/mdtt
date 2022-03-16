@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Mdtt;
 
 use Symfony\Component\Console\Command\Command;
