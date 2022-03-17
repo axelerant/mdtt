@@ -1,4 +1,14 @@
 {
+    "name": "axelerant/mdtt",
+    "description": "Migrated data testing tool",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Subhojit Paul",
+            "email": "subhojit.paul@axelerant.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "symfony/console": "^6.0"
     },
@@ -17,5 +27,6 @@
         "squizlabs/php_codesniffer": "^3.6",
         "phpstan/phpstan": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.7"
-    }
+    },
+    "bin": ["mdtt"]
 }
