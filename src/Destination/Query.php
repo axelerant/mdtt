@@ -4,7 +4,6 @@ namespace Mdtt\Destination;
 
 class Query implements Destination
 {
-
     /**
      * @inheritDoc
      */

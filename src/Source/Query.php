@@ -4,7 +4,6 @@ namespace Mdtt\Source;
 
 class Query implements Source
 {
-
     /**
      * @inheritDoc
      */
