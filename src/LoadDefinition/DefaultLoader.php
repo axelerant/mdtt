@@ -14,7 +14,7 @@ class DefaultLoader implements Load
     /**
      * @inheritDoc
      */
-    public function scan(): iterable
+    public function scan(): array
     {
         $ymlTestDefinitions = glob("tests/mdtt/*.yml", GLOB_ERR);
         if ($ymlTestDefinitions === false) {
@@ -39,6 +39,7 @@ class DefaultLoader implements Load
      */
     public function validate(): iterable
     {
+        /** @var array<array<string>>|array<array<array<string>>> $testDefinitions */
         $testDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
         }, $this->scan());
@@ -48,26 +49,24 @@ class DefaultLoader implements Load
             $this->doValidate($testDefinition);
 
             $parsedTestDefinition = new DefaultTestDefinition();
-            $parsedTestDefinition->setId($testDefinition['id']);
 
-            // TODO: Improve the source initialization.
-            // This will become bigger while adding support for json, xml, etc.
-            if ($testDefinition['source']['type'] === "query") {
-                $parsedTestDefinition->setSource((new QuerySource()));
+            /** @var string $id */
+            $id = $testDefinition['id'];
+            $parsedTestDefinition->setId($id);
+
+            $parsedTestDefinition->setSource((new QuerySource()));
+            $parsedTestDefinition->setDestination((new QueryDestination()));
+
+            /** @var ?string $description */
+            $description = $testDefinition['description'] ?? null;
+            if ($description) {
+                $parsedTestDefinition->setDescription($description);
             }
 
-            // TODO: Improve the destination initialization.
-            // This will become bigger while adding support for json, xml, etc.
-            if ($testDefinition['destination']['type'] === "query") {
-                $parsedTestDefinition->setDestination((new QueryDestination()));
-            }
-
-            if (!empty($testDefinition['description'])) {
-                $parsedTestDefinition->setDescription($testDefinition['description']);
-            }
-
-            if (!empty($testDefinition['group'])) {
-                $parsedTestDefinition->setGroup($testDefinition['group']);
+            /** @var ?string $group */
+            $group = $testDefinition['group'] ?? null;
+            if ($group) {
+                $parsedTestDefinition->setGroup($group);
             }
 
             $parsedTestDefinitions[] = $parsedTestDefinition;
@@ -78,7 +77,7 @@ class DefaultLoader implements Load
 
     /**
      * Validates the test definitions.
-     * @param array $parsedTestDefinition
+     * @param array<string>|array<array<string>> $parsedTestDefinition
      */
     private function doValidate(array $parsedTestDefinition): void
     {
@@ -87,14 +86,16 @@ class DefaultLoader implements Load
         }
 
         // TODO: Further validate source types to SQL, JSON, XML, CSV.
-        if (empty($parsedTestDefinition['source']['type'] ||
+        if (is_array($parsedTestDefinition['source']) &&
+          (empty($parsedTestDefinition['source']['type']) ||
           empty($parsedTestDefinition['source']['data']))) {
             throw new TestSetupException("Test definition source is missing");
         }
 
         // TODO: Further validate destination types to SQL, JSON, XML.
-        if (empty($parsedTestDefinition['destination']['type']) ||
-          empty($parsedTestDefinition['destination']['data'])) {
+        if (is_array($parsedTestDefinition['destination']) &&
+          (empty($parsedTestDefinition['destination']['type']) ||
+          empty($parsedTestDefinition['destination']['data']))) {
             throw new TestSetupException("Test definition destination is missing");
         }
 

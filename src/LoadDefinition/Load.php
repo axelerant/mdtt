@@ -11,7 +11,7 @@ interface Load
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      * @throws \Mdtt\Exception\TestSetupException
      */
-    public function scan(): iterable;
+    public function scan(): array;
 
     /**
      * Parses and validates the test definitions.
