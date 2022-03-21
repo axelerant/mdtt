@@ -28,7 +28,11 @@ class RunCommand extends Command
         try {
             $logger->info("Loading test definitions");
 
-            $testDefinitions = (new DefaultLoader())->validate();
+            /** @var \Mdtt\Definition\Definition[] $definitions */
+            $definitions = (new DefaultLoader())->validate();
+            foreach ($definitions as $definition) {
+                $definition->runTests();
+            }
         } catch (IOException $exception) {
             $logger->error($exception->getMessage());
             return Command::FAILURE;

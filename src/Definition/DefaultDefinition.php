@@ -6,6 +6,7 @@ namespace Mdtt\Definition;
 
 use Mdtt\Destination\Destination;
 use Mdtt\Source\Source;
+use Webmozart\Assert\Assert;
 
 class DefaultDefinition implements Definition
 {
@@ -100,6 +101,13 @@ class DefaultDefinition implements Definition
      */
     public function runTests(): void
     {
-        // TODO: Implement runTests() method.
+        $sourceData = $this->getSource()->processData();
+        $destinationData = $this->getDestination()->processData();
+
+        Assert::same(count($sourceData), count($destinationData));
+
+        foreach ($sourceData as $key => $sourceDatum) {
+            Assert::same($destinationData[$key], $sourceDatum);
+        }
     }
 }

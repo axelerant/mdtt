@@ -11,7 +11,8 @@
     ],
     "require": {
         "symfony/console": "^6.0",
-        "symfony/yaml": "^6.0"
+        "symfony/yaml": "^6.0",
+        "webmozart/assert": "^1.10"
     },
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
