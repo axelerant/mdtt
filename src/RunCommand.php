@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Mdtt;
 
-use _PHPStan_ae8980142\Nette\IOException;
 use Mdtt\LoadDefinition\DefaultLoader;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 class RunCommand extends Command
 {
@@ -28,8 +28,7 @@ class RunCommand extends Command
         try {
             $logger->info("Loading test definitions");
 
-            $testDefinitions = (new DefaultLoader())->scan();
-            $output->writeln($testDefinitions);
+            $testDefinitions = (new DefaultLoader())->validate();
         } catch (IOException $exception) {
             $logger->error($exception->getMessage());
             return Command::FAILURE;
