@@ -2,10 +2,10 @@
 
 namespace Mdtt\LoadDefinition;
 
+use Mdtt\Definition\DefaultDefinition;
 use Mdtt\Destination\Query as QueryDestination;
-use Mdtt\Exception\TestSetupException;
+use Mdtt\Exception\SetupException;
 use Mdtt\Source\Query as QuerySource;
-use Mdtt\TestDefinition\DefaultTestDefinition;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -28,7 +28,7 @@ class DefaultLoader implements Load
 
         $testDefinitions = array_merge([], $ymlTestDefinitions, $yamlTestDefinitions);
         if (!$testDefinitions) {
-            throw new TestSetupException("No test definitions found.");
+            throw new SetupException("No test definitions found.");
         }
 
         return $testDefinitions;
@@ -48,7 +48,7 @@ class DefaultLoader implements Load
         foreach ($testDefinitions as $testDefinition) {
             $this->doValidate($testDefinition);
 
-            $parsedTestDefinition = new DefaultTestDefinition();
+            $parsedTestDefinition = new DefaultDefinition();
 
             /** @var string $id */
             $id = $testDefinition['id'];
@@ -82,25 +82,25 @@ class DefaultLoader implements Load
     private function doValidate(array $parsedTestDefinition): void
     {
         if (empty($parsedTestDefinition['id'])) {
-            throw new TestSetupException("Test definition id is missing");
+            throw new SetupException("Test definition id is missing");
         }
 
         // TODO: Further validate source types to SQL, JSON, XML, CSV.
         if (is_array($parsedTestDefinition['source']) &&
           (empty($parsedTestDefinition['source']['type']) ||
           empty($parsedTestDefinition['source']['data']))) {
-            throw new TestSetupException("Test definition source is missing");
+            throw new SetupException("Test definition source is missing");
         }
 
         // TODO: Further validate destination types to SQL, JSON, XML.
         if (is_array($parsedTestDefinition['destination']) &&
           (empty($parsedTestDefinition['destination']['type']) ||
           empty($parsedTestDefinition['destination']['data']))) {
-            throw new TestSetupException("Test definition destination is missing");
+            throw new SetupException("Test definition destination is missing");
         }
 
         if (empty($parsedTestDefinition['tests'])) {
-            throw new TestSetupException("Test definition tests are missing");
+            throw new SetupException("Test definition tests are missing");
         }
     }
 }

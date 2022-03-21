@@ -1,8 +1,8 @@
 <?php
 
-namespace Mdtt\TestDefinition;
+namespace Mdtt\Definition;
 
-interface TestDefinition
+interface Definition
 {
     /**
      * Runs the tests.

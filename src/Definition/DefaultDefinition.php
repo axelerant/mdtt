@@ -1,11 +1,11 @@
 <?php
 
-namespace Mdtt\TestDefinition;
+namespace Mdtt\Definition;
 
 use Mdtt\Destination\Destination;
 use Mdtt\Source\Source;
 
-class DefaultTestDefinition implements TestDefinition
+class DefaultDefinition implements Definition
 {
     private string $id;
     private string $description;

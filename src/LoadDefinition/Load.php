@@ -9,15 +9,15 @@ interface Load
      *
      * @return array<string>
      * @throws \Symfony\Component\Filesystem\Exception\IOException
-     * @throws \Mdtt\Exception\TestSetupException
+     * @throws \Mdtt\Exception\SetupException
      */
     public function scan(): array;
 
     /**
      * Parses and validates the test definitions.
      *
-     * @return array<\Mdtt\TestDefinition\TestDefinition>
-     * @throws \Mdtt\Exception\TestSetupException
+     * @return array<\Mdtt\Definition\Definition>
+     * @throws \Mdtt\Exception\SetupException
      */
     public function validate(): iterable;
 }
