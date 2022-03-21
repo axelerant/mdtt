@@ -2,6 +2,7 @@
 
 namespace Mdtt\LoadDefinition;
 
+use Mdtt\Exception\MissingTestDefinition;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class DefaultLoader implements Load
@@ -21,6 +22,11 @@ class DefaultLoader implements Load
             throw new IOException("Error occurred while loading test definitions");
         }
 
-        return array_merge([], $ymlTestDefinitions, $yamlTestDefinitions);
+        $testDefinitions = array_merge([], $ymlTestDefinitions, $yamlTestDefinitions);
+        if (!$testDefinitions) {
+            throw new MissingTestDefinition("No test definitions found.");
+        }
+
+        return $testDefinitions;
     }
 }

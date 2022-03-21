@@ -9,6 +9,7 @@ interface Load
      *
      * @return array<string>
      * @throws \Symfony\Component\Filesystem\Exception\IOException
+     * @throws \Mdtt\Exception\MissingTestDefinition
      */
     public function scan(): iterable;
 }
