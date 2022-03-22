@@ -9,5 +9,5 @@ interface Destination
      *
      * @return array<string>
      */
-    public function processData(): iterable;
+    public function processData(): array;
 }

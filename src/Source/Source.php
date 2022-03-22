@@ -19,5 +19,5 @@ abstract class Source
      * @return array<string>
      * @throws \Mdtt\Exception\SetupException
      */
-    abstract public function processData(): iterable;
+    abstract public function processData(): array;
 }
