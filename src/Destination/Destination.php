@@ -6,7 +6,8 @@ interface Destination
 {
     /**
      * Returns the destination data.
-     * @return void
+     *
+     * @return array<string>
      */
-    public function processData(): void;
+    public function processData(): iterable;
 }

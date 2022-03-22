@@ -9,8 +9,8 @@ class Query implements Destination
     /**
      * @inheritDoc
      */
-    public function processData(): void
+    public function processData(): iterable
     {
-        // TODO: Implement processData() method.
+        return [];
     }
 }

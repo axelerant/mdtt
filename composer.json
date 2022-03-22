@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "ext-mysqli": "*",
         "symfony/console": "^6.0",
         "symfony/yaml": "^6.0",
         "webmozart/assert": "^1.10"

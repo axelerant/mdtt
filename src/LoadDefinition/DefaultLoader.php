@@ -56,7 +56,7 @@ class DefaultLoader implements Load
             $id = $testDefinition['id'];
             $parsedTestDefinition->setId($id);
 
-            $parsedTestDefinition->setSource((new QuerySource()));
+            $parsedTestDefinition->setSource((new QuerySource($testDefinition['source']['data'])));
             $parsedTestDefinition->setDestination((new QueryDestination()));
 
             /** @var ?string $description */

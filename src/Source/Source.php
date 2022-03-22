@@ -2,11 +2,22 @@
 
 namespace Mdtt\Source;
 
-interface Source
+abstract class Source
 {
+    private string $type;
+    protected string $data;
+
+    public function __construct(string $type, string $data)
+    {
+        $this->type = $type;
+        $this->data = $data;
+    }
+
     /**
      * Returns the source data.
-     * @return void
+     *
+     * @return array<string>
+     * @throws \Mdtt\Exception\SetupException
      */
-    public function processData(): void;
+    abstract public function processData(): iterable;
 }
