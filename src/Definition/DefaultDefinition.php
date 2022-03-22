@@ -101,13 +101,11 @@ class DefaultDefinition implements Definition
      */
     public function runTests(): void
     {
-        $sourceData = $this->getSource()->processData();
+        $sourceData = $this->getSource()->getItem();
         $destinationData = $this->getDestination()->processData();
 
-        Assert::same(count($sourceData), count($destinationData));
-
-        foreach ($sourceData as $key => $sourceDatum) {
-            Assert::same($destinationData[$key], $sourceDatum);
-        }
+        do {
+            Assert::same($sourceData, $destinationData);
+        } while ($sourceData || $destinationData);
     }
 }

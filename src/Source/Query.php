@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace Mdtt\Source;
 
+use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
 
 class Query extends Source
 {
+    private \mysqli_result $resultSet;
+
     /**
-     * @inheritDoc
+     * Obtains the result set from the source database based on the query.
      */
-    public function processData(): array
+    private function prepareResultSet(): void
     {
         $specification = require "tests/mdtt/spec.php";
 
@@ -41,8 +44,32 @@ class Query extends Source
             throw new SetupException($exception->getMessage());
         }
 
-        mysqli_query($databaseConnection, $this->data);
+        /** @var \mysqli_result|false $result */
+        $result = mysqli_query($databaseConnection, $this->data);
 
-        return [];
+        if ($result === false) {
+            throw new ExecutionException("Something went wrong while retrieving data from source database.");
+        }
+
+        $this->resultSet = $result;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getItem(): ?array
+    {
+        if (!isset($this->resultSet)) {
+            $this->prepareResultSet();
+        }
+
+        /** @var array<int|string>|false|null $row */
+        $row = mysqli_fetch_assoc($this->resultSet);
+
+        if ($row === false) {
+            throw new ExecutionException("Something went wrong while retrieving an item from the source.");
+        }
+
+        return $row;
     }
 }

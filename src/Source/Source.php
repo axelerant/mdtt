@@ -12,10 +12,9 @@ abstract class Source
     }
 
     /**
-     * Returns the source data.
+     * Returns an item from the source.
      *
-     * @return array<string>
-     * @throws \Mdtt\Exception\SetupException
+     * @return array<string>|array<int>
      */
-    abstract public function processData(): array;
+    abstract public function getItem(): ?array;
 }
