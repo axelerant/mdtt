@@ -4,12 +4,10 @@ namespace Mdtt\Source;
 
 abstract class Source
 {
-    private string $type;
     protected string $data;
 
-    public function __construct(string $type, string $data)
+    public function __construct(string $data)
     {
-        $this->type = $type;
         $this->data = $data;
     }
 

@@ -8,11 +8,6 @@ use Mdtt\Exception\SetupException;
 
 class Query extends Source
 {
-    public function __construct(string $data)
-    {
-        parent::__construct('query', $data);
-    }
-
     /**
      * @inheritDoc
      */
