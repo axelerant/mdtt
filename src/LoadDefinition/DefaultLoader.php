@@ -128,7 +128,9 @@ class DefaultLoader implements Load
         if (empty($parsedTestDefinition['tests']) && !is_array($parsedTestDefinition['tests'])) {
             throw new SetupException("Test definition tests are missing");
         }
-        foreach ($parsedTestDefinition['tests'] as $test) {
+        /** @var array<array<string>> $tests */
+        $tests = $parsedTestDefinition['tests'];
+        foreach ($tests as $test) {
             if (empty($test['sourceField']) || empty($test['destinationField'])) {
                 throw new SetupException("Test definition tests are missing");
             }

@@ -121,16 +121,18 @@ class DefaultDefinition implements Definition
         $source = $this->getSource();
         $destination = $this->getDestination();
 
+        /** @var array<scalar>|null $sourceData */
         $sourceData = $source->getItem();
+        /** @var array<scalar>|null $destinationData */
         $destinationData = $destination->getItem();
 
-        do {
+        while ($sourceData && $destinationData) {
             foreach ($this->getTests() as $test) {
                 $test->execute($sourceData, $destinationData);
             }
 
             $sourceData = $source->getItem();
             $destinationData = $destination->getItem();
-        } while ($sourceData || $destinationData);
+        }
     }
 }
