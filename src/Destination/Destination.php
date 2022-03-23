@@ -2,12 +2,19 @@
 
 namespace Mdtt\Destination;
 
-interface Destination
+abstract class Destination
 {
+    protected string $data;
+
+    public function __construct(string $data)
+    {
+        $this->data = $data;
+    }
+
     /**
-     * Returns the destination data.
+     * Returns an item from the source.
      *
-     * @return array<string>
+     * @return array<string>|array<int>
      */
-    public function processData(): array;
+    abstract public function getItem(): ?array;
 }

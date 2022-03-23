@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Mdtt\Destination;
 
-class Query implements Destination
+class Query extends Destination
 {
     /**
      * @inheritDoc
      */
-    public function processData(): array
+    public function getItem(): ?array
     {
         return [];
     }
