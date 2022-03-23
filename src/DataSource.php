@@ -1,8 +1,8 @@
 <?php
 
-namespace Mdtt\Source;
+namespace Mdtt;
 
-abstract class Source
+abstract class DataSource
 {
     protected string $data;
 

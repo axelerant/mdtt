@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
+use Mdtt\DataSource;
 use Mdtt\Destination\Destination;
-use Mdtt\Source\Source;
 use Webmozart\Assert\Assert;
 
 class DefaultDefinition implements Definition
@@ -13,7 +13,7 @@ class DefaultDefinition implements Definition
     private string $id;
     private string $description;
     private string $group;
-    private Source $source;
+    private DataSource $source;
     private Destination $destination;
 
     /**
@@ -65,17 +65,17 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\Source\Source
+     * @return \Mdtt\DataSource
      */
-    public function getSource(): Source
+    public function getSource(): DataSource
     {
         return $this->source;
     }
 
     /**
-     * @param \Mdtt\Source\Source $source
+     * @param \Mdtt\DataSource $source
      */
-    public function setSource(Source $source): void
+    public function setSource(DataSource $source): void
     {
         $this->source = $source;
     }

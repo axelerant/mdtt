@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Mdtt\Destination;
 
-class Query extends Destination
+use Mdtt\DataSource;
+
+class Query extends DataSource
 {
     /**
      * @inheritDoc

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Mdtt\Source;
 
+use Mdtt\DataSource;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
 
-class Query extends Source
+class Query extends DataSource
 {
     private \mysqli_result $resultSet;
 
