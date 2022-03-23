@@ -7,15 +7,16 @@ namespace Mdtt\Source;
 use Mdtt\DataSource;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
+use Mdtt\Utility\DataSource\Database;
 
 class Query extends DataSource
 {
     private \mysqli_result $resultSet;
 
     /**
-     * Obtains the result set from the source database based on the query.
+     * @inheritDoc
      */
-    private function prepareResultSet(): void
+    public function getItem(): ?array
     {
         $specification = require "tests/mdtt/spec.php";
 
@@ -31,37 +32,15 @@ class Query extends DataSource
             throw new SetupException("Source database not specified correctly");
         }
 
-        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-        try {
-            /** @var \mysqli $databaseConnection */
-            $databaseConnection = mysqli_connect(
-                $databases['source_db']['host'],
+        if (!isset($this->resultSet)) {
+            $this->resultSet = Database::prepareResultSet(
+                $databases['source_db']['database'],
                 $databases['source_db']['username'],
                 $databases['source_db']['password'],
-                $databases['source_db']['database'],
-                (int) $databases['source_db']['port']
+                $databases['source_db']['host'],
+                (int)$databases['source_db']['port'],
+                $this->data
             );
-        } catch (\Exception $exception) {
-            throw new SetupException($exception->getMessage());
-        }
-
-        /** @var \mysqli_result|false $result */
-        $result = mysqli_query($databaseConnection, $this->data);
-
-        if ($result === false) {
-            throw new ExecutionException("Something went wrong while retrieving data from source database.");
-        }
-
-        $this->resultSet = $result;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getItem(): ?array
-    {
-        if (!isset($this->resultSet)) {
-            $this->prepareResultSet();
         }
 
         /** @var array<int|string>|false|null $row */
