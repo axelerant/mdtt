@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\Definition;
 
 use Mdtt\DataSource;
-use Webmozart\Assert\Assert;
+use Mdtt\Test\Test;
 
 class DefaultDefinition implements Definition
 {
@@ -14,6 +14,24 @@ class DefaultDefinition implements Definition
     private string $group;
     private DataSource $source;
     private DataSource $destination;
+    /** @var array<Test> */
+    private array $tests;
+
+    /**
+     * @return \Mdtt\Test\Test[]
+     */
+    public function getTests(): array
+    {
+        return $this->tests;
+    }
+
+    /**
+     * @param \Mdtt\Test\Test[] $tests
+     */
+    public function setTests(array $tests): void
+    {
+        $this->tests = $tests;
+    }
 
     /**
      * @return string
@@ -107,7 +125,9 @@ class DefaultDefinition implements Definition
         $destinationData = $destination->getItem();
 
         do {
-            Assert::same($sourceData, $destinationData);
+            foreach ($this->getTests() as $test) {
+                $test->execute($sourceData, $destinationData);
+            }
 
             $sourceData = $source->getItem();
             $destinationData = $destination->getItem();

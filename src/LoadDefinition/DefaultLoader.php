@@ -8,6 +8,7 @@ use Mdtt\Definition\DefaultDefinition;
 use Mdtt\Destination\Query as QueryDestination;
 use Mdtt\Exception\SetupException;
 use Mdtt\Source\Query as QuerySource;
+use Mdtt\Test\DefaultTest;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -68,6 +69,20 @@ class DefaultLoader implements Load
             $destinationData = $destinationInformation['data'];
             $parsedTestDefinition->setDestination((new QueryDestination($destinationData)));
 
+            /** @var array<array<string>> $tests */
+            $tests = $testDefinition['tests'];
+            /** @var array<\Mdtt\Test\Test> $parsedTests */
+            $parsedTests = [];
+            foreach ($tests as $test) {
+                /** @var string $sourceField */
+                $sourceField = $test['sourceField'];
+                /** @var string $destinationField */
+                $destinationField = $test['destinationField'];
+
+                $parsedTests[] = new DefaultTest($sourceField, $destinationField);
+            }
+            $parsedTestDefinition->setTests($parsedTests);
+
             /** @var ?string $description */
             $description = $testDefinition['description'] ?? null;
             if ($description) {
@@ -110,8 +125,13 @@ class DefaultLoader implements Load
             throw new SetupException("Test definition destination is missing");
         }
 
-        if (empty($parsedTestDefinition['tests'])) {
+        if (empty($parsedTestDefinition['tests']) && !is_array($parsedTestDefinition['tests'])) {
             throw new SetupException("Test definition tests are missing");
+        }
+        foreach ($parsedTestDefinition['tests'] as $test) {
+            if (empty($test['sourceField']) || empty($test['destinationField'])) {
+                throw new SetupException("Test definition tests are missing");
+            }
         }
     }
 }
