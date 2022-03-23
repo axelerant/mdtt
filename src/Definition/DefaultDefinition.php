@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Mdtt\Definition;
 
 use Mdtt\DataSource;
-use Mdtt\Destination\Destination;
 use Webmozart\Assert\Assert;
 
 class DefaultDefinition implements Definition
@@ -14,7 +13,7 @@ class DefaultDefinition implements Definition
     private string $description;
     private string $group;
     private DataSource $source;
-    private Destination $destination;
+    private DataSource $destination;
 
     /**
      * @return string
@@ -81,17 +80,17 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\Destination\Destination
+     * @return \Mdtt\DataSource
      */
-    public function getDestination(): Destination
+    public function getDestination(): DataSource
     {
         return $this->destination;
     }
 
     /**
-     * @param \Mdtt\Destination\Destination $destination
+     * @param \Mdtt\DataSource $destination
      */
-    public function setDestination(Destination $destination): void
+    public function setDestination(DataSource $destination): void
     {
         $this->destination = $destination;
     }
@@ -101,11 +100,17 @@ class DefaultDefinition implements Definition
      */
     public function runTests(): void
     {
-        $sourceData = $this->getSource()->getItem();
-        $destinationData = $this->getDestination()->processData();
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+
+        $sourceData = $source->getItem();
+        $destinationData = $destination->getItem();
 
         do {
             Assert::same($sourceData, $destinationData);
+
+            $sourceData = $source->getItem();
+            $destinationData = $destination->getItem();
         } while ($sourceData || $destinationData);
     }
 }
