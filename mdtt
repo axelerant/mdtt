@@ -3,9 +3,13 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use Mdtt\RunCommand;
-use Symfony\Component\Console\Application;
+use Mdtt\AppKernel;
+use Mdtt\Application;
 
-$app = new Application('MDTT', 'v1.0.0');
-$app->add(new RunCommand());
+// TODO: Replace by env variable.
+$kernel = new AppKernel("dev", false);
+$kernel->boot();
+
+$container = $kernel->getContainer();
+$app = $container->get(Application::class);
 $app->run();

@@ -1,0 +1,18 @@
+services:
+  _defaults:
+    autowire: true
+    bind:
+      Psr\Log\LoggerInterface: '@monolog.logger.request'
+
+  Mdtt\:
+    resource: '../src'
+    exclude:
+        - '../src/DependencyInjection/'
+        - '../src/AppKernel.php'
+
+  Mdtt\Application:
+    public: true
+
+  Mdtt\Definition\DefaultDefinition:
+    arguments:
+      $logger: '@monolog.logger.request'
