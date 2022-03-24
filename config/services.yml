@@ -9,11 +9,5 @@ services:
         - '../src/DependencyInjection/'
         - '../src/AppKernel.php'
 
-  logger:
-    class: Symfony\Component\HttpKernel\Log\Logger
-    autowire: false
-
-  Psr\Log\LoggerInterface: '@logger'
-
   Mdtt\Application:
     public: true

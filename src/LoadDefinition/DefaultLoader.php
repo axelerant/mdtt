@@ -9,11 +9,22 @@ use Mdtt\Destination\Query as QueryDestination;
 use Mdtt\Exception\SetupException;
 use Mdtt\Source\Query as QuerySource;
 use Mdtt\Test\DefaultTest;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
 
 class DefaultLoader implements Load
 {
+    private LoggerInterface $logger;
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @inheritDoc
      */
@@ -51,7 +62,7 @@ class DefaultLoader implements Load
         foreach ($testDefinitions as $testDefinition) {
             $this->doValidate($testDefinition);
 
-            $parsedTestDefinition = new DefaultDefinition();
+            $parsedTestDefinition = new DefaultDefinition($this->logger);
 
             /** @var string $id */
             $id = $testDefinition['id'];

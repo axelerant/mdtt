@@ -5,22 +5,14 @@ declare(strict_types=1);
 namespace Mdtt;
 
 use Mdtt\LoadDefinition\DefaultLoader;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class RunCommand extends Command
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger, string $name = null)
-    {
-        parent::__construct($name);
-        $this->logger = $logger;
-    }
-
     protected function configure(): void
     {
         $this->setName('run')
@@ -31,16 +23,17 @@ class RunCommand extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
+        $logger = new ConsoleLogger($output);
         try {
-            $this->logger->info("Loading test definitions");
+            $logger->notice("Loading test definitions");
 
             /** @var \Mdtt\Definition\Definition[] $definitions */
-            $definitions = (new DefaultLoader())->validate();
+            $definitions = (new DefaultLoader($logger))->validate();
             foreach ($definitions as $definition) {
                 $definition->runTests();
             }
         } catch (IOException $exception) {
-            $this->logger->error($exception->getMessage());
+            $logger->error($exception->getMessage());
             return Command::FAILURE;
         }
 

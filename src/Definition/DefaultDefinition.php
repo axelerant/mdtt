@@ -6,6 +6,7 @@ namespace Mdtt\Definition;
 
 use Mdtt\DataSource;
 use Mdtt\Test\Test;
+use Psr\Log\LoggerInterface;
 
 class DefaultDefinition implements Definition
 {
@@ -16,6 +17,15 @@ class DefaultDefinition implements Definition
     private DataSource $destination;
     /** @var array<Test> */
     private array $tests;
+    private LoggerInterface $logger;
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     /**
      * @return \Mdtt\Test\Test[]
@@ -120,6 +130,7 @@ class DefaultDefinition implements Definition
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
+        $this->logger->info("Running the tests now...");
 
         /** @var array<scalar>|null $sourceData */
         $sourceData = $source->getItem();
