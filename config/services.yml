@@ -1,8 +1,7 @@
 services:
   _defaults:
     autowire: true
-    bind:
-      Psr\Log\LoggerInterface: '@monolog.logger.request'
+    autoconfigure: true
 
   Mdtt\:
     resource: '../src'
@@ -10,9 +9,11 @@ services:
         - '../src/DependencyInjection/'
         - '../src/AppKernel.php'
 
+  logger:
+    class: Symfony\Component\HttpKernel\Log\Logger
+    autowire: false
+
+  Psr\Log\LoggerInterface: '@logger'
+
   Mdtt\Application:
     public: true
-
-  Mdtt\Definition\DefaultDefinition:
-    arguments:
-      $logger: '@monolog.logger.request'
