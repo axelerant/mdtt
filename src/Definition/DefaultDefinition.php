@@ -6,8 +6,9 @@ namespace Mdtt\Definition;
 
 use Mdtt\DataSource;
 use Mdtt\Test\Test;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
-use Webmozart\Assert\Assert;
 
 class DefaultDefinition implements Definition
 {
@@ -147,10 +148,13 @@ class DefaultDefinition implements Definition
             $destinationData = $destination->getItem();
         }
 
-        Assert::same(
-            $sourceData,
-            $destinationData,
-            "Number of source items does not match number of destination items."
-        );
+        try {
+            Assert::assertTrue(
+                ($sourceData === null) && ($destinationData === null),
+                "Number of source items does not match number of destination items."
+            );
+        } catch (ExpectationFailedException $exception) {
+            $this->logger->emergency($exception->getMessage());
+        }
     }
 }

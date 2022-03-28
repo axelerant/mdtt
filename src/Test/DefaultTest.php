@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Mdtt\Test;
 
 use Mdtt\Exception\ExecutionException;
-use Webmozart\Assert\Assert;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
 
 class DefaultTest extends Test
 {
@@ -28,10 +29,14 @@ class DefaultTest extends Test
             $destinationData[$this->getDestinationField()]
         ));
 
-        Assert::same(
-            $sourceData[$this->getSourceField()],
-            $destinationData[$this->getDestinationField()],
-            "Source and destination does not match."
-        );
+        try {
+            Assert::assertSame(
+                $sourceData[$this->getSourceField()],
+                $destinationData[$this->getDestinationField()],
+                "Source and destination does not match."
+            );
+        } catch (ExpectationFailedException $exception) {
+            $this->getLogger()->emergency($exception->getMessage());
+        }
     }
 }
