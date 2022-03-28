@@ -21,7 +21,8 @@
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
         "php-cs-fixer": "./vendor/bin/php-cs-fixer fix src",
-        "phpstan": "./vendor/bin/phpstan analyse src --level max"
+        "phpstan": "./vendor/bin/phpstan analyse src --level max",
+        "test": "composer php-cs && composer phpstan"
     },
     "autoload": {
         "psr-4": {
