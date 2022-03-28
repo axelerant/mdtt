@@ -4,16 +4,46 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
-use Mdtt\Destination\Destination;
-use Mdtt\Source\Source;
+use Mdtt\DataSource;
+use Mdtt\Test\Test;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
+use Psr\Log\LoggerInterface;
 
 class DefaultDefinition implements Definition
 {
     private string $id;
     private string $description;
     private string $group;
-    private Source $source;
-    private Destination $destination;
+    private DataSource $source;
+    private DataSource $destination;
+    /** @var array<Test> */
+    private array $tests;
+    private LoggerInterface $logger;
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return \Mdtt\Test\Test[]
+     */
+    public function getTests(): array
+    {
+        return $this->tests;
+    }
+
+    /**
+     * @param \Mdtt\Test\Test[] $tests
+     */
+    public function setTests(array $tests): void
+    {
+        $this->tests = $tests;
+    }
 
     /**
      * @return string
@@ -64,33 +94,33 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\Source\Source
+     * @return \Mdtt\DataSource
      */
-    public function getSource(): Source
+    public function getSource(): DataSource
     {
         return $this->source;
     }
 
     /**
-     * @param \Mdtt\Source\Source $source
+     * @param \Mdtt\DataSource $source
      */
-    public function setSource(Source $source): void
+    public function setSource(DataSource $source): void
     {
         $this->source = $source;
     }
 
     /**
-     * @return \Mdtt\Destination\Destination
+     * @return \Mdtt\DataSource
      */
-    public function getDestination(): Destination
+    public function getDestination(): DataSource
     {
         return $this->destination;
     }
 
     /**
-     * @param \Mdtt\Destination\Destination $destination
+     * @param \Mdtt\DataSource $destination
      */
-    public function setDestination(Destination $destination): void
+    public function setDestination(DataSource $destination): void
     {
         $this->destination = $destination;
     }
@@ -100,6 +130,31 @@ class DefaultDefinition implements Definition
      */
     public function runTests(): void
     {
-        // TODO: Implement runTests() method.
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+        $this->logger->info("Running the tests now...");
+
+        /** @var array<scalar>|null $sourceData */
+        $sourceData = $source->getItem();
+        /** @var array<scalar>|null $destinationData */
+        $destinationData = $destination->getItem();
+
+        while ($sourceData && $destinationData) {
+            foreach ($this->getTests() as $test) {
+                $test->execute($sourceData, $destinationData);
+            }
+
+            $sourceData = $source->getItem();
+            $destinationData = $destination->getItem();
+        }
+
+        try {
+            Assert::assertTrue(
+                ($sourceData === null) && ($destinationData === null),
+                "Number of source items does not match number of destination items."
+            );
+        } catch (ExpectationFailedException $exception) {
+            $this->logger->emergency($exception->getMessage());
+        }
     }
 }

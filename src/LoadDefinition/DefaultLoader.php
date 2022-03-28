@@ -8,11 +8,23 @@ use Mdtt\Definition\DefaultDefinition;
 use Mdtt\Destination\Query as QueryDestination;
 use Mdtt\Exception\SetupException;
 use Mdtt\Source\Query as QuerySource;
+use Mdtt\Test\DefaultTest;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
 
 class DefaultLoader implements Load
 {
+    private LoggerInterface $logger;
+
+    /**
+     * @param \Psr\Log\LoggerInterface $logger
+     */
+    public function __construct(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * @inheritDoc
      */
@@ -50,14 +62,37 @@ class DefaultLoader implements Load
         foreach ($testDefinitions as $testDefinition) {
             $this->doValidate($testDefinition);
 
-            $parsedTestDefinition = new DefaultDefinition();
+            $parsedTestDefinition = new DefaultDefinition($this->logger);
 
             /** @var string $id */
             $id = $testDefinition['id'];
             $parsedTestDefinition->setId($id);
 
-            $parsedTestDefinition->setSource((new QuerySource()));
-            $parsedTestDefinition->setDestination((new QueryDestination()));
+            /** @var array<string> $sourceInformation */
+            $sourceInformation = $testDefinition['source'];
+            /** @var string $sourceData */
+            $sourceData = $sourceInformation['data'];
+            $parsedTestDefinition->setSource((new QuerySource($sourceData)));
+
+            /** @var array<string> $destinationInformation */
+            $destinationInformation = $testDefinition['destination'];
+            /** @var string $destinationData */
+            $destinationData = $destinationInformation['data'];
+            $parsedTestDefinition->setDestination((new QueryDestination($destinationData)));
+
+            /** @var array<array<string>> $tests */
+            $tests = $testDefinition['tests'];
+            /** @var array<\Mdtt\Test\Test> $parsedTests */
+            $parsedTests = [];
+            foreach ($tests as $test) {
+                /** @var string $sourceField */
+                $sourceField = $test['sourceField'];
+                /** @var string $destinationField */
+                $destinationField = $test['destinationField'];
+
+                $parsedTests[] = new DefaultTest($sourceField, $destinationField, $this->logger);
+            }
+            $parsedTestDefinition->setTests($parsedTests);
 
             /** @var ?string $description */
             $description = $testDefinition['description'] ?? null;
@@ -101,8 +136,15 @@ class DefaultLoader implements Load
             throw new SetupException("Test definition destination is missing");
         }
 
-        if (empty($parsedTestDefinition['tests'])) {
+        if (empty($parsedTestDefinition['tests']) && !is_array($parsedTestDefinition['tests'])) {
             throw new SetupException("Test definition tests are missing");
+        }
+        /** @var array<array<string>> $tests */
+        $tests = $parsedTestDefinition['tests'];
+        foreach ($tests as $test) {
+            if (empty($test['sourceField']) || empty($test['destinationField'])) {
+                throw new SetupException("Test definition tests are missing");
+            }
         }
     }
 }

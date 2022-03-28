@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Mdtt\:
+    resource: '../src'
+    exclude:
+        - '../src/DependencyInjection/'
+        - '../src/AppKernel.php'
+
+  Mdtt\Application:
+    public: true

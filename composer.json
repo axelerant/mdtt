@@ -10,8 +10,13 @@
         }
     ],
     "require": {
+        "ext-mysqli": "*",
         "symfony/console": "^6.0",
-        "symfony/yaml": "^6.0"
+        "symfony/yaml": "^6.0",
+        "symfony/dependency-injection": "^6.0",
+        "symfony/config": "^6.0",
+        "symfony/http-kernel": "^6.0",
+        "phpunit/phpunit": "^9.5"
     },
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
