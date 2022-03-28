@@ -82,6 +82,8 @@ tests:
     destinationField: mail
 ```
 
+You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
+
 ## Run tests
 
 ```shell
