@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
-use Mdtt\Destination\Query as QueryDestination;
+use Mdtt\Destination\Database as DatabaseDestination;
 use Mdtt\Exception\SetupException;
-use Mdtt\Source\Query as QuerySource;
+use Mdtt\Source\Database as DatabaseSource;
 use Mdtt\Test\DefaultTest;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -72,13 +72,17 @@ class DefaultLoader implements Load
             $sourceInformation = $testDefinition['source'];
             /** @var string $sourceData */
             $sourceData = $sourceInformation['data'];
-            $parsedTestDefinition->setSource((new QuerySource($sourceData)));
+            /** @var string $sourceDatabase */
+            $sourceDatabase = $sourceInformation['database'];
+            $parsedTestDefinition->setSource((new DatabaseSource($sourceData, $sourceDatabase)));
 
             /** @var array<string> $destinationInformation */
             $destinationInformation = $testDefinition['destination'];
             /** @var string $destinationData */
             $destinationData = $destinationInformation['data'];
-            $parsedTestDefinition->setDestination((new QueryDestination($destinationData)));
+            /** @var string $destinationDatabase */
+            $destinationDatabase = $destinationInformation['database'];
+            $parsedTestDefinition->setDestination((new DatabaseDestination($destinationData, $destinationDatabase)));
 
             /** @var array<array<string>> $tests */
             $tests = $testDefinition['tests'];
@@ -125,14 +129,16 @@ class DefaultLoader implements Load
         // TODO: Further validate source types to SQL, JSON, XML, CSV.
         if (is_array($parsedTestDefinition['source']) &&
           (empty($parsedTestDefinition['source']['type']) ||
-          empty($parsedTestDefinition['source']['data']))) {
+          empty($parsedTestDefinition['source']['data']) ||
+            empty($parsedTestDefinition['source']['database']))) {
             throw new SetupException("Test definition source is missing");
         }
 
         // TODO: Further validate destination types to SQL, JSON, XML.
         if (is_array($parsedTestDefinition['destination']) &&
           (empty($parsedTestDefinition['destination']['type']) ||
-          empty($parsedTestDefinition['destination']['data']))) {
+          empty($parsedTestDefinition['destination']['data']) ||
+            empty($parsedTestDefinition['destination']['database']))) {
             throw new SetupException("Test definition destination is missing");
         }
 
