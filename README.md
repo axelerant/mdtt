@@ -100,6 +100,8 @@ tests:
 
 ## Contribution
 
+Fork this repository and do the changes.
+
 ### Run tests
 
 ```shell
