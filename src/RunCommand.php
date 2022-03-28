@@ -25,7 +25,7 @@ class RunCommand extends Command
     ): int {
         $logger = new ConsoleLogger($output);
         try {
-            $logger->notice("Loading test definitions");
+            $logger->info("Loading test definitions");
 
             /** @var \Mdtt\Definition\Definition[] $definitions */
             $definitions = (new DefaultLoader($logger))->validate();

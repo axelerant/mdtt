@@ -6,7 +6,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Mdtt\AppKernel;
 use Mdtt\Application;
 
-// TODO: Replace by env variable.
+// Can be replaced by an env variable.
 $kernel = new AppKernel("dev", false);
 $kernel->boot();
 
