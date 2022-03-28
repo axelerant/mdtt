@@ -7,6 +7,7 @@ namespace Mdtt\Definition;
 use Mdtt\DataSource;
 use Mdtt\Test\Test;
 use Psr\Log\LoggerInterface;
+use Webmozart\Assert\Assert;
 
 class DefaultDefinition implements Definition
 {
@@ -145,5 +146,11 @@ class DefaultDefinition implements Definition
             $sourceData = $source->getItem();
             $destinationData = $destination->getItem();
         }
+
+        Assert::same(
+            $sourceData,
+            $destinationData,
+            "Number of source items does not match number of destination items."
+        );
     }
 }

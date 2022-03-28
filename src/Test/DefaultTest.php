@@ -22,6 +22,16 @@ class DefaultTest extends Test
             throw new ExecutionException("Destination field could not be found in the destination data.");
         }
 
-        Assert::same($sourceData[$this->getSourceField()], $destinationData[$this->getDestinationField()]);
+        $this->getLogger()->info(sprintf(
+            "Comparing source <info>%s</info> with destination <info>%s</info>",
+            $sourceData[$this->getSourceField()],
+            $destinationData[$this->getDestinationField()]
+        ));
+
+        Assert::same(
+            $sourceData[$this->getSourceField()],
+            $destinationData[$this->getDestinationField()],
+            "Source and destination does not match."
+        );
     }
 }

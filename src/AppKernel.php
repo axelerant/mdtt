@@ -11,7 +11,6 @@ use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
-
     /**
      * @inheritDoc
      */
@@ -33,6 +32,6 @@ class AppKernel extends Kernel
      */
     protected function build(ContainerBuilder $container): void
     {
-        $container->addCompilerPass(new CommandsToApplicationCompilerPass);
+        $container->addCompilerPass(new CommandsToApplicationCompilerPass());
     }
 }

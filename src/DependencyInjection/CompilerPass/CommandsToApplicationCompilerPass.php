@@ -12,11 +12,10 @@ use Symfony\Component\DependencyInjection\Reference;
 
 class CommandsToApplicationCompilerPass implements CompilerPassInterface
 {
-
     /**
      * @inheritDoc
      */
-    public function process(ContainerBuilder $container):void
+    public function process(ContainerBuilder $container): void
     {
         $applicationDefinition = $container->getDefinition(Application::class);
 
