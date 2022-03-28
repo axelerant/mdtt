@@ -1,4 +1,5 @@
-# Migrated Data Testing Tool (MDTT)
+<h1 align="center">Migrated Data Testing Tool (MDTT)</h1>
+<p align="center">[![Tests](https://github.com/axelerant/mdtt/actions/workflows/tests.yml/badge.svg)](https://github.com/axelerant/mdtt/actions/workflows/tests.yml)</p>
 
 This tools helps you to verify the quality of your migrated data.
 
