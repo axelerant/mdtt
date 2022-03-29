@@ -1,15 +1,33 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
-
-use Mdtt\AppKernel;
 use Mdtt\Application;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
-// Can be replaced by an env variable.
-$kernel = new AppKernel("dev", false);
-$kernel->boot();
+/**
+ * Determine vendor directory.
+ */
+$vendorDirectory = '';
 
-$container = $kernel->getContainer();
-$app = $container->get(Application::class);
-$app->run();
+if (file_exists(__DIR__.'/vendor/autoload.php')) {
+    $vendorDirectory = __DIR__.'/vendor';
+}
+
+if (empty($vendorDirectory)) {
+    throw new \RuntimeException('Unable to find vendor directory');
+}
+
+require $vendorDirectory . '/autoload.php';
+
+$container = new ContainerBuilder();
+
+$container->setParameter('vendor_directory', $vendorDirectory);
+
+$loader    = new YamlFileLoader($container, new FileLocator());
+$loader->load(__DIR__.'/config/services.yml');
+
+$container->compile();
+
+($container->get(Application::class))->run();
