@@ -5,6 +5,7 @@ use Mdtt\Application;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\Dotenv\Dotenv;
 
 /**
  * Determine vendor directory.
@@ -29,5 +30,8 @@ $loader    = new YamlFileLoader($container, new FileLocator());
 $loader->load(__DIR__.'/config/services.yml');
 
 $container->compile();
+
+$dotenv = new Dotenv();
+$dotenv->usePutenv()->loadEnv(__DIR__ . '/.env');
 
 ($container->get(Application::class))->run();
