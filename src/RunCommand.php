@@ -55,9 +55,11 @@ class RunCommand extends Command
             return Command::FAILURE;
         }
 
-        if ($input->getOption('email') !== null) {
+        /** @var string|null $email */
+        $email = $input->getOption('email');
+        if ($email !== null) {
             try {
-                $this->email->sendMessage("Test completed", "Test completed", $input->getOption('email'));
+                $this->email->sendMessage("Test completed", "Test completed", $email);
             } catch (SetupException $exception) {
                 $this->logger->error($exception->getMessage());
             }

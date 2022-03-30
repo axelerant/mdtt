@@ -7,6 +7,7 @@ namespace Mdtt\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 
 class DefaultLogger implements LoggerInterface
 {
@@ -98,7 +99,15 @@ class DefaultLogger implements LoggerInterface
     }
 
     /**
-     * @inheritDoc
+     * Adds a log record at an arbitrary level.
+     *
+     * This method allows for compatibility with common interfaces.
+     *
+     * @param mixed             $level   The log level
+     * @param string|\Stringable $message The log message
+     * @param array<string> $context The log context
+     *
+     * @phpstan-param LogLevel::* $level
      */
     public function log(
         $level,
