@@ -32,6 +32,6 @@ $loader->load(__DIR__.'/../config/services.yml');
 $container->compile();
 
 $dotenv = new Dotenv();
-$dotenv->usePutenv()->loadEnv(__DIR__.'/../.env');
+$dotenv->usePutenv()->loadEnv($vendorDirectory.'/../.env');
 
 ($container->get(Application::class))->run();
