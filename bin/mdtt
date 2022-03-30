@@ -15,6 +15,7 @@ $vendorDirectory = '';
 if (file_exists(__DIR__.'/../vendor/autoload.php')) {
     $vendorDirectory = __DIR__.'/../vendor';
 }
+var_dump(__DIR__);
 
 if (empty($vendorDirectory)) {
     throw new \RuntimeException('Unable to find vendor directory');
