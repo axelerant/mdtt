@@ -89,7 +89,7 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 ## Run tests
 
 ```shell
-./vendor/bin/mdtt run -vvv
+./vendor/bin/mdtt run -vv
 ```
 
 ## Features
@@ -101,6 +101,10 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 ## Supported types of destination
 
 - Database (MySQL)
+
+## Supported types of channels to notify when test completes
+
+- Email
 
 ## Contribution
 
