@@ -12,15 +12,13 @@ use Symfony\Component\Dotenv\Dotenv;
  */
 $vendorDirectory = '';
 
-if (file_exists(__DIR__.'/vendor/autoload.php')) {
-    $vendorDirectory = __DIR__.'/vendor';
+if (file_exists(__DIR__.'/../vendor/autoload.php')) {
+    $vendorDirectory = __DIR__.'/../vendor';
 }
 
 if (empty($vendorDirectory)) {
     throw new \RuntimeException('Unable to find vendor directory');
 }
-
-require $vendorDirectory . '/autoload.php';
 
 $container = new ContainerBuilder();
 
@@ -32,6 +30,6 @@ $loader->load(__DIR__.'/config/services.yml');
 $container->compile();
 
 $dotenv = new Dotenv();
-$dotenv->usePutenv()->loadEnv(__DIR__ . '/.env');
+$dotenv->usePutenv()->loadEnv(__DIR__.'/.env');
 
 ($container->get(Application::class))->run();
