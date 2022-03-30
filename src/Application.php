@@ -19,6 +19,6 @@ class Application extends BaseApplication
             $this->add($command);
         }
 
-        parent::__construct('MDTT', '0.0.1');
+        parent::__construct('MDTT', '0.1.0');
     }
 }
