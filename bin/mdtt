@@ -10,15 +10,13 @@ use Symfony\Component\Dotenv\Dotenv;
 /**
  * Determine vendor directory.
  */
-$vendorDirectory = '';
+$vendorDirectory = __DIR__.'/../vendor';
 
-if (file_exists(__DIR__.'/../vendor/autoload.php')) {
-    $vendorDirectory = __DIR__.'/../vendor';
+if ($_composer_bin_dir) {
+    $vendorDirectory = $_composer_bin_dir . '/..';
 }
-var_dump(__DIR__);
-var_dump($_composer_autoload_path);
-var_dump($_composer_bin_dir);
-//include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
 if (empty($vendorDirectory)) {
     throw new \RuntimeException('Unable to find vendor directory');
