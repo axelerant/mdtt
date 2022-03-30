@@ -7,21 +7,23 @@ namespace Mdtt;
 use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\DefaultLoader;
 use Mdtt\Notification\Email;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class RunCommand extends Command
 {
     private Email $email;
+    private LoggerInterface $logger;
 
-    public function __construct(Email $email, string $name = null)
+    public function __construct(Email $email, LoggerInterface $logger, string $name = null)
     {
         parent::__construct($name);
         $this->email = $email;
+        $this->logger = $logger;
     }
 
     protected function configure(): void
@@ -40,17 +42,16 @@ class RunCommand extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
-        $logger = new ConsoleLogger($output);
         try {
-            $logger->info("Loading test definitions");
+            $this->logger->info("Loading test definitions");
 
             /** @var \Mdtt\Definition\Definition[] $definitions */
-            $definitions = (new DefaultLoader($logger))->validate();
+            $definitions = (new DefaultLoader($this->logger))->validate();
             foreach ($definitions as $definition) {
                 $definition->runTests();
             }
         } catch (IOException $exception) {
-            $logger->error($exception->getMessage());
+            $this->logger->error($exception->getMessage());
             return Command::FAILURE;
         }
 
@@ -58,7 +59,7 @@ class RunCommand extends Command
             try {
                 $this->email->sendMessage("Test completed", "Test completed", $input->getOption('email'));
             } catch (SetupException $exception) {
-                $logger->error($exception->getMessage());
+                $this->logger->error($exception->getMessage());
             }
         }
 
