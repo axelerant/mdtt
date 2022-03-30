@@ -102,6 +102,10 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 
 - Database (MySQL)
 
+## Supported types of channels to notify when test completes
+
+- Email
+
 ## Contribution
 
 Fork this repository and do the changes.
