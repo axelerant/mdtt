@@ -89,7 +89,19 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 ## Run tests
 
 ```shell
-./vendor/bin/mdtt run -vv
+./vendor/bin/mdtt run
+```
+
+### Verbose mode
+
+```shell
+./vendor/bin/mdtt run -vvv
+```
+
+### Specify email where notification will be sent when test completes
+
+```shell
+./vendor/bin/mdtt run --email foo@bar.mail
 ```
 
 ## Features
