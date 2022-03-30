@@ -25,11 +25,11 @@ $container = new ContainerBuilder();
 $container->setParameter('vendor_directory', $vendorDirectory);
 
 $loader    = new YamlFileLoader($container, new FileLocator());
-$loader->load(__DIR__.'/config/services.yml');
+$loader->load(__DIR__.'/../config/services.yml');
 
 $container->compile();
 
 $dotenv = new Dotenv();
-$dotenv->usePutenv()->loadEnv(__DIR__.'/.env');
+$dotenv->usePutenv()->loadEnv(__DIR__.'/../.env');
 
 ($container->get(Application::class))->run();
