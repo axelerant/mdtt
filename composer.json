@@ -17,10 +17,8 @@
         "symfony/config": "^6.0",
         "symfony/http-kernel": "^6.0",
         "phpunit/phpunit": "^9.5",
-        "symfony/mailer": "^6.0",
         "symfony/dotenv": "^6.0",
-        "symfony/http-client": "^6.0",
-        "symfony/sendgrid-mailer": "^6.0"
+        "sendgrid/sendgrid": "^7.11"
     },
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",

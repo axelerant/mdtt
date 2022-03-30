@@ -5,12 +5,6 @@ services:
     Symfony\Component\Console\Command\Command:
       tags: [ 'app.command' ]
 
-  Symfony\Component\Mailer\:
-    resource: '%vendor_directory%/symfony/mailer'
-
-  Symfony\Component\Mailer\Transport\TransportInterface:
-    class: \Symfony\Component\Mailer\Transport\SendmailTransport
-
   Psr\Log\:
     resource: '%vendor_directory%/psr/log/src'
 
