@@ -89,7 +89,7 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 ## Run tests
 
 ```shell
-./vendor/bin/mdtt run -vvv
+./vendor/bin/mdtt run -vv
 ```
 
 ## Features
