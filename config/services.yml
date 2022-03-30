@@ -9,6 +9,7 @@ services:
   Monolog\Logger:
     class: \Monolog\Logger
     arguments:
+      # Log channel name.
       - 'mdtt'
 
   # Custom services.
