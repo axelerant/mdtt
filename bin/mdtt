@@ -10,28 +10,28 @@ use Symfony\Component\Dotenv\Dotenv;
 /**
  * Determine vendor directory.
  */
-$vendorDirectory = '';
+$vendorDirectory = __DIR__.'/../vendor';
 
-if (file_exists(__DIR__.'/vendor/autoload.php')) {
-    $vendorDirectory = __DIR__.'/vendor';
+if ($_composer_bin_dir) {
+    $vendorDirectory = $_composer_bin_dir . '/..';
 }
+
+include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
 if (empty($vendorDirectory)) {
     throw new \RuntimeException('Unable to find vendor directory');
 }
-
-require $vendorDirectory . '/autoload.php';
 
 $container = new ContainerBuilder();
 
 $container->setParameter('vendor_directory', $vendorDirectory);
 
 $loader    = new YamlFileLoader($container, new FileLocator());
-$loader->load(__DIR__.'/config/services.yml');
+$loader->load(__DIR__.'/../config/services.yml');
 
 $container->compile();
 
 $dotenv = new Dotenv();
-$dotenv->usePutenv()->loadEnv(__DIR__ . '/.env');
+$dotenv->usePutenv()->loadEnv($vendorDirectory.'/../.env');
 
 ($container->get(Application::class))->run();

@@ -38,5 +38,7 @@
         "phpstan/phpstan": "^1.4",
         "friendsofphp/php-cs-fixer": "^3.7"
     },
-    "bin": ["mdtt"]
+    "bin": [
+        "bin/mdtt"
+    ]
 }
