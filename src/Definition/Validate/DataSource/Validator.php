@@ -16,6 +16,7 @@ class Validator
      * @param array<string> $rawDataSourceDefinition
      *
      * @return \Mdtt\DataSource
+     * @throws \Mdtt\Exception\SetupException
      */
     public function validate(string $type, array $rawDataSourceDefinition): DataSource
     {

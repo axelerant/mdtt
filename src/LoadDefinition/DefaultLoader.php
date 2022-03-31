@@ -6,9 +6,7 @@ namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
 use Mdtt\Definition\Validate\DataSource\Validator;
-use Mdtt\Destination\Database as DatabaseDestination;
 use Mdtt\Exception\SetupException;
-use Mdtt\Source\Database as DatabaseSource;
 use Mdtt\Test\DefaultTest;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -70,19 +68,21 @@ class DefaultLoader implements Load
 
             /** @var array<string> $sourceInformation */
             $sourceInformation = $testDefinition['source'];
-            /** @var string $sourceData */
-            $sourceData = $sourceInformation['data'];
-            /** @var string $sourceDatabase */
-            $sourceDatabase = $sourceInformation['database'];
-            $parsedTestDefinition->setSource((new DatabaseSource($sourceData, $sourceDatabase)));
+            try {
+                $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
+                $parsedTestDefinition->setSource($sourceData);
+            } catch (SetupException $exception) {
+                $this->logger->alert($exception->getMessage());
+            }
 
             /** @var array<string> $destinationInformation */
             $destinationInformation = $testDefinition['destination'];
-            /** @var string $destinationData */
-            $destinationData = $destinationInformation['data'];
-            /** @var string $destinationDatabase */
-            $destinationDatabase = $destinationInformation['database'];
-            $parsedTestDefinition->setDestination((new DatabaseDestination($destinationData, $destinationDatabase)));
+            try {
+                $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
+                $parsedTestDefinition->setDestination($destinationData);
+            } catch (SetupException $exception) {
+                $this->logger->alert($exception->getMessage());
+            }
 
             /** @var array<array<string>> $tests */
             $tests = $testDefinition['tests'];

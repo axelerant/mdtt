@@ -18,12 +18,14 @@ class RunCommand extends Command
 {
     private Email $email;
     private LoggerInterface $logger;
+    private DefaultLoader $definitionLoader;
 
-    public function __construct(Email $email, LoggerInterface $logger, string $name = null)
+    public function __construct(Email $email, LoggerInterface $logger, DefaultLoader $loader, string $name = null)
     {
         parent::__construct($name);
         $this->email = $email;
         $this->logger = $logger;
+        $this->definitionLoader = $loader;
     }
 
     protected function configure(): void
@@ -46,7 +48,7 @@ class RunCommand extends Command
             $this->logger->info("Loading test definitions");
 
             /** @var \Mdtt\Definition\Definition[] $definitions */
-            $definitions = (new DefaultLoader($this->logger))->validate();
+            $definitions = $this->definitionLoader->validate();
             foreach ($definitions as $definition) {
                 $definition->runTests();
             }
