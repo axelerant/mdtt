@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
+use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Destination\Database as DatabaseDestination;
 use Mdtt\Exception\SetupException;
 use Mdtt\Source\Database as DatabaseSource;
@@ -16,13 +17,12 @@ use Symfony\Component\Yaml\Yaml;
 class DefaultLoader implements Load
 {
     private LoggerInterface $logger;
+    private Validator $dataSourceValidator;
 
-    /**
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, Validator $validator)
     {
         $this->logger = $logger;
+        $this->dataSourceValidator = $validator;
     }
 
     /**
@@ -129,16 +129,14 @@ class DefaultLoader implements Load
         // TODO: Further validate source types to SQL, JSON, XML, CSV.
         if (is_array($parsedTestDefinition['source']) &&
           (empty($parsedTestDefinition['source']['type']) ||
-          empty($parsedTestDefinition['source']['data']) ||
-            empty($parsedTestDefinition['source']['database']))) {
+          empty($parsedTestDefinition['source']['data']))) {
             throw new SetupException("Test definition source is missing");
         }
 
         // TODO: Further validate destination types to SQL, JSON, XML.
         if (is_array($parsedTestDefinition['destination']) &&
           (empty($parsedTestDefinition['destination']['type']) ||
-          empty($parsedTestDefinition['destination']['data']) ||
-            empty($parsedTestDefinition['destination']['database']))) {
+          empty($parsedTestDefinition['destination']['data']))) {
             throw new SetupException("Test definition destination is missing");
         }
 
