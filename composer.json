@@ -19,7 +19,8 @@
         "phpunit/phpunit": "^9.5",
         "symfony/dotenv": "^6.0",
         "sendgrid/sendgrid": "^7.11",
-        "monolog/monolog": "^2.4"
+        "monolog/monolog": "^2.4",
+        "symfony/http-client": "^6.0"
     },
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",

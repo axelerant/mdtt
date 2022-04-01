@@ -6,9 +6,17 @@ namespace Mdtt\Definition\Validate\DataSource;
 
 use Mdtt\DataSource;
 use Mdtt\Exception\SetupException;
+use Mdtt\Utility\HttpClient;
 
 class Validator
 {
+    private HttpClient $httpClient;
+
+    public function __construct(HttpClient $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
     /**
      * Validates whether the datasource information in test definition is valid.
      *
@@ -40,6 +48,30 @@ class Validator
                 return new \Mdtt\Destination\Database(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['database']
+                );
+            }
+        }
+
+        if ($type === "json") {
+            $this->doValidateJson($rawDataSourceDefinition);
+
+            if ($dataSourceType === "source") {
+                return new \Mdtt\Source\Json(
+                    $rawDataSourceDefinition['data'],
+                    $rawDataSourceDefinition['selector'],
+                    $this->httpClient,
+                    0,
+                    $rawDataSourceDefinition['auth_basic'] ?? null
+                );
+            }
+
+            if ($dataSourceType === "destination") {
+                return new \Mdtt\Destination\Json(
+                    $rawDataSourceDefinition['data'],
+                    $rawDataSourceDefinition['selector'],
+                    $this->httpClient,
+                    0,
+                    $rawDataSourceDefinition['auth_basic'] ?? null
                 );
             }
         }
