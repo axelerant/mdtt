@@ -24,17 +24,24 @@ class Validator
             throw new SetupException("Incorrect data source type is passed.");
         }
 
-        if ($type === "source" && $rawDataSourceDefinition['type'] === "database") {
+        /** @var string $dataSourceType */
+        $dataSourceType = $rawDataSourceDefinition['type'];
+        if ($dataSourceType === "database") {
             $this->doValidateDatabase($rawDataSourceDefinition);
-            return new \Mdtt\Source\Database($rawDataSourceDefinition['data'], $rawDataSourceDefinition['database']);
-        }
 
-        if ($type === "destination" && $rawDataSourceDefinition['type'] === "database") {
-            $this->doValidateDatabase($rawDataSourceDefinition);
-            return new \Mdtt\Destination\Database(
-                $rawDataSourceDefinition['data'],
-                $rawDataSourceDefinition['database']
-            );
+            if ($type === "source") {
+                return new \Mdtt\Source\Database(
+                    $rawDataSourceDefinition['data'],
+                    $rawDataSourceDefinition['database']
+                );
+            }
+
+            if ($type === "destination") {
+                return new \Mdtt\Destination\Database(
+                    $rawDataSourceDefinition['data'],
+                    $rawDataSourceDefinition['database']
+                );
+            }
         }
 
         throw new SetupException(sprintf("Unexpected data source type %s and data source definition passed.", $type));
