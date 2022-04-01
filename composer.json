@@ -9,6 +9,7 @@
             "role": "Developer"
         }
     ],
+    "license": "MIT",
     "require": {
         "ext-mysqli": "*",
         "symfony/console": "^6.0",
