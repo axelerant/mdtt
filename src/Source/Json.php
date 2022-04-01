@@ -11,7 +11,7 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class Json extends DataSource
 {
-    private string $authBasicCredential;
+    private ?string $authBasicCredential;
     private HttpClient $httpClient;
     private string $selector;
     private int $offset;
@@ -29,6 +29,22 @@ class Json extends DataSource
 
         $this->offset = $offset;
         $this->authBasicCredential = $authBasicCredential;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSelector(): string
+    {
+        return $this->selector;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOffset(): int
+    {
+        return $this->offset;
     }
 
     /**

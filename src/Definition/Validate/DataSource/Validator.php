@@ -79,6 +79,11 @@ class Validator
         throw new SetupException(sprintf("Unexpected data source type %s and data source definition passed.", $type));
     }
 
+    /**
+     * @param array<string> $rawDataSourceDefinition
+     *
+     * @return void
+     */
     private function doValidateDatabase(array $rawDataSourceDefinition): void
     {
         $dbValidator = new Database();
@@ -90,6 +95,11 @@ class Validator
         }
     }
 
+    /**
+     * @param array<string> $rawDataSourceDefinition
+     *
+     * @return void
+     */
     private function doValidateJson(array $rawDataSourceDefinition): void
     {
         $jsonValidator = new Json();
