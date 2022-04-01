@@ -52,10 +52,10 @@ class Validator
             }
         }
 
-        if ($type === "json") {
+        if ($dataSourceType === "json") {
             $this->doValidateJson($rawDataSourceDefinition);
 
-            if ($dataSourceType === "source") {
+            if ($type === "source") {
                 return new \Mdtt\Source\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
@@ -65,7 +65,7 @@ class Validator
                 );
             }
 
-            if ($dataSourceType === "destination") {
+            if ($type === "destination") {
                 return new \Mdtt\Destination\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
