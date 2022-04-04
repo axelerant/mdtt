@@ -8,11 +8,11 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\StreamWrapper;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
+use JsonMachine\JsonDecoder\ExtJsonDecoder;
 use Mdtt\DataSource;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Utility\HttpClient;
 use Psr\Http\Client\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class Json extends DataSource
 {
@@ -76,8 +76,11 @@ class Json extends DataSource
 
         $responseStream = StreamWrapper::getResource($response->getBody());
         try {
-            $items = Items::fromStream($responseStream);
-            $itemsIterator = $items->getIterator();
+            /** @var \Iterator $items */
+            $items = Items::fromStream($responseStream, [
+              'pointer' => $this->selector,
+                'decoder' => new ExtJsonDecoder(true),
+            ]);
         } catch (InvalidArgumentException $e) {
             throw new ExecutionException(
                 sprintf(
@@ -96,7 +99,7 @@ class Json extends DataSource
         // end - setup.
         // start - getItem.
 
-        foreach ($itemsIterator as $item) {
+        foreach ($items as $item) {
             return $item;
         }
 
