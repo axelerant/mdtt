@@ -6,15 +6,15 @@ namespace Mdtt\Definition\Validate\DataSource;
 
 use Mdtt\DataSource;
 use Mdtt\Exception\SetupException;
-use Mdtt\Utility\HttpClient;
+use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
 class Validator
 {
-    private HttpClient $httpClient;
+    private JsonDataSourceUtility $jsonDataSourceUtility;
 
-    public function __construct(HttpClient $httpClient)
+    public function __construct(JsonDataSourceUtility $jsonDataSourceUtility)
     {
-        $this->httpClient = $httpClient;
+        $this->jsonDataSourceUtility = $jsonDataSourceUtility;
     }
 
     /**
@@ -55,13 +55,15 @@ class Validator
         if ($dataSourceType === "json") {
             $this->doValidateJson($rawDataSourceDefinition);
 
+            if (isset($rawDataSourceDefinition['auth_basic'])) {
+                $this->jsonDataSourceUtility->setAuthBasicCredential($rawDataSourceDefinition['auth_basic']);
+            }
+
             if ($type === "source") {
                 return new \Mdtt\Source\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
-                    $this->httpClient,
-                    0,
-                    $rawDataSourceDefinition['auth_basic'] ?? null
+                    $this->jsonDataSourceUtility,
                 );
             }
 
@@ -69,9 +71,7 @@ class Validator
                 return new \Mdtt\Destination\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
-                    $this->httpClient,
-                    0,
-                    $rawDataSourceDefinition['auth_basic'] ?? null
+                    $this->jsonDataSourceUtility
                 );
             }
         }
