@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace Mdtt\Source;
 
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\StreamWrapper;
+use JsonMachine\Exception\InvalidArgumentException;
+use JsonMachine\Items;
 use Mdtt\DataSource;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Utility\HttpClient;
+use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 class Json extends DataSource
@@ -53,28 +58,48 @@ class Json extends DataSource
     public function getItem(): ?array
     {
         $httpClient = $this->httpClient->getClient();
-        try {
-            if ($this->authBasicCredential !== null) {
-                $response = $httpClient->request('GET', $this->data, [
-                  'auth_basic' => $this->authBasicCredential,
-                ]);
-            } else {
-                $response = $httpClient->request('GET', $this->data);
-            }
+        $request = new Request('GET', $this->data);
 
-            $responseStatusCode = $response->getStatusCode();
-        } catch (TransportExceptionInterface $e) {
+        if ($this->authBasicCredential !== null) {
+            $credential = explode(':', $this->authBasicCredential);
+            $request->withHeader('auth', $credential);
+        }
+        try {
+            $response = $httpClient->sendRequest($request);
+        } catch (ClientExceptionInterface $e) {
             throw new ExecutionException($e->getMessage());
         }
 
-        if ($responseStatusCode !== 200) {
-            throw new ExecutionException("Unable to receieve 200 OK response from the endpoint.");
+        if ($response->getStatusCode() !== 200) {
+            throw new ExecutionException("Unable to receive 200 OK response from the endpoint.");
         }
 
-        foreach ($httpClient->stream($response) as $item) {
-            var_dump($item);
+        $responseStream = StreamWrapper::getResource($response->getBody());
+        try {
+            $items = Items::fromStream($responseStream);
+            $itemsIterator = $items->getIterator();
+        } catch (InvalidArgumentException $e) {
+            throw new ExecutionException(
+                sprintf(
+                    "Something went wrong while streaming items from the response. Message: %s",
+                    $e->getMessage()
+                )
+            );
+        } catch (\Exception $e) {
+            throw new ExecutionException(
+                sprintf(
+                    "Something went wrong while looping through the response items. MessageL %s",
+                    $e->getMessage()
+                )
+            );
+        }
+        // end - setup.
+        // start - getItem.
+
+        foreach ($itemsIterator as $item) {
+            return $item;
         }
 
-        return ['hello' => 'hello'];
+        return null;
     }
 }
