@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Source;
 
+use JsonMachine\Items;
 use Mdtt\DataSource;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
@@ -11,7 +12,7 @@ class Json extends DataSource
 {
     private string $selector;
     private JsonDataSourceUtility $jsonDataSourceUtility;
-    private ?\Iterator $items;
+    private Items|\Iterator|null $items;
 
     public function __construct(
         string $data,
@@ -36,7 +37,7 @@ class Json extends DataSource
      */
     public function getItem(): ?array
     {
-        if (!$this->items) {
+        if (!isset($this->items)) {
             $this->items = $this->jsonDataSourceUtility->getItems($this->data, $this->selector);
         }
 

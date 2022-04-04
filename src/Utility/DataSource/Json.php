@@ -31,12 +31,12 @@ class Json
         $this->authBasicCredential = $authBasicCredential;
     }
 
-    public function getItems(string $data, string $selector): \Iterator
+    public function getItems(string $data, string $selector): Items
     {
         $httpClient = $this->httpClient->getClient();
         $request = new Request('GET', $data);
 
-        if ($this->authBasicCredential !== null) {
+        if (isset($this->authBasicCredential)) {
             $credential = explode(':', $this->authBasicCredential);
             $request->withHeader('auth', $credential);
         }
@@ -53,7 +53,6 @@ class Json
 
         $responseStream = StreamWrapper::getResource($response->getBody());
         try {
-            /** @var \Iterator $items */
             $items = Items::fromStream($responseStream, [
               'pointer' => $selector,
               'decoder' => new ExtJsonDecoder(true),
