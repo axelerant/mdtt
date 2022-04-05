@@ -12,7 +12,8 @@ class Json extends DataSource
 {
     private string $selector;
     private JsonDataSourceUtility $jsonDataSourceUtility;
-    private Items|\Iterator|null $items;
+    private Items|null $items;
+    private \Generator|null $itemsIterator;
 
     public function __construct(
         string $data,
@@ -33,19 +34,23 @@ class Json extends DataSource
     }
 
     /**
+     * @throws \Exception
+     */
+    private function getItemsIterator(): \Generator
+    {
+        return $this->items->getIterator();
+    }
+
+    /**
      * @inheritDoc
      */
     public function getItem(): ?array
     {
-        if (!isset($this->items)) {
+        if (!isset($this->itemsIterator)) {
             $this->items = $this->jsonDataSourceUtility->getItems($this->data, $this->selector);
+            $this->itemsIterator = $this->getItemsIterator();
         }
 
-        /** @var array<string|int> $item */
-        foreach ($this->items as $item) {
-            return $item;
-        }
-
-        return null;
+        return $this->itemsIterator->current();
     }
 }
