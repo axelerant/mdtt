@@ -35,17 +35,12 @@ class Json extends DataSource
     /**
      * @inheritDoc
      */
-    public function getItem(): ?array
+    public function getItem(): \Iterator
     {
         if (!isset($this->items)) {
             $this->items = $this->jsonDataSourceUtility->getItems($this->data, $this->selector);
         }
 
-        /** @var array<string|int> $item */
-        foreach ($this->items as $item) {
-            return $item;
-        }
-
-        return null;
+        yield $this->items;
     }
 }

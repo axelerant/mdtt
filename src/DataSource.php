@@ -2,6 +2,8 @@
 
 namespace Mdtt;
 
+use Iterator;
+
 abstract class DataSource
 {
     protected string $data;
@@ -14,7 +16,7 @@ abstract class DataSource
     /**
      * Returns an item from the source.
      *
-     * @return array<string>|array<int>
+     * @return Iterator
      */
-    abstract public function getItem(): ?array;
+    abstract public function getItem(): Iterator;
 }
