@@ -11,6 +11,6 @@ class Json implements Type
      */
     public function validate(array $rawDataSourceDefinition): bool
     {
-        return !empty($rawDataSourceDefinition['selector']);
+        return isset($rawDataSourceDefinition['selector']);
     }
 }
