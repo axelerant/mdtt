@@ -62,13 +62,13 @@ description: Validates users
 group: migration_validation
 # The query used for generating the source dataset
 source:
-  type: query
+  type: database
   data: "select * from users"
   # The source database credentials
   database: source_db
 # The query used for generating the destination dataset
 destination:
-  type: query
+  type: database
   data: "select * from users_field_data"
   # The destination database credentials
   database: destination_db
@@ -82,6 +82,32 @@ tests:
   -
     sourceField: mail
     destinationField: mail
+```
+
+#### JSON
+
+```yaml
+id: validate_public_apis
+description: Validate public apis
+group: migration_validation
+# The endpoint that returns the source dataset.
+source:
+  type: json
+  data: https://legacy-system.com/api/v1/users
+  # The pointer where all the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
+  selector: "/results/-/employees"
+# The endpoint that returns the destination dataset.
+destination:
+  type: json
+  data: https://new-system.com/api/v1/users
+  selector: "/results/-/employees"
+tests:
+  -
+    sourceField: name
+    destinationField: name
+  -
+    sourceField: email
+    destinationField: email
 ```
 
 You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
@@ -109,10 +135,12 @@ You can find the basic template for the tool usage [here](https://github.com/axe
 ## Supported types of source
 
 - Database (MySQL)
+- JSON
 
 ## Supported types of destination
 
 - Database (MySQL)
+- JSON
 
 ## Supported types of channels to notify when test completes
 
