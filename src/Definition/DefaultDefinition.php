@@ -139,13 +139,14 @@ class DefaultDefinition implements Definition
         /** @var array<scalar>|null $destinationData */
         $destinationData = $destination->getItem();
 
-        while ($sourceData && $destinationData) {
-            foreach ($this->getTests() as $test) {
-                $test->execute($sourceData, $destinationData);
-            }
+        $dataSources = new \MultipleIterator();
+        $dataSources->attachIterator($sourceData);
+        $dataSources->attachIterator($destinationData);
 
-            $sourceData = $source->getItem();
-            $destinationData = $destination->getItem();
+        foreach ($dataSources as [$sourceValue, $destinationValue]) {
+            foreach ($this->getTests() as $test) {
+                $test->execute($sourceValue, $destinationValue);
+            }
         }
 
         try {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Destination;
 
+use Iterator;
 use Mdtt\DataSource;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
@@ -24,7 +25,7 @@ class Database extends DataSource
     /**
      * @inheritDoc
      */
-    public function getItem(): ?array
+    public function getItem(): Iterator
     {
         $specification = require "tests/mdtt/spec.php";
 
@@ -51,7 +52,7 @@ class Database extends DataSource
             );
         }
 
-        /** @var array<int|string>|false|null $row */
+        /** @var Iterator|false $row */
         $row = mysqli_fetch_assoc($this->resultSet);
 
         if ($row === false) {
