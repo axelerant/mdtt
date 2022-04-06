@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
-use Mdtt\Destination\Database as DatabaseDestination;
+use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
-use Mdtt\Source\Database as DatabaseSource;
 use Mdtt\Test\DefaultTest;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
@@ -16,13 +15,12 @@ use Symfony\Component\Yaml\Yaml;
 class DefaultLoader implements Load
 {
     private LoggerInterface $logger;
+    private Validator $dataSourceValidator;
 
-    /**
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, Validator $validator)
     {
         $this->logger = $logger;
+        $this->dataSourceValidator = $validator;
     }
 
     /**
@@ -70,19 +68,21 @@ class DefaultLoader implements Load
 
             /** @var array<string> $sourceInformation */
             $sourceInformation = $testDefinition['source'];
-            /** @var string $sourceData */
-            $sourceData = $sourceInformation['data'];
-            /** @var string $sourceDatabase */
-            $sourceDatabase = $sourceInformation['database'];
-            $parsedTestDefinition->setSource((new DatabaseSource($sourceData, $sourceDatabase)));
+            try {
+                $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
+                $parsedTestDefinition->setSource($sourceData);
+            } catch (SetupException $exception) {
+                $this->logger->alert($exception->getMessage());
+            }
 
             /** @var array<string> $destinationInformation */
             $destinationInformation = $testDefinition['destination'];
-            /** @var string $destinationData */
-            $destinationData = $destinationInformation['data'];
-            /** @var string $destinationDatabase */
-            $destinationDatabase = $destinationInformation['database'];
-            $parsedTestDefinition->setDestination((new DatabaseDestination($destinationData, $destinationDatabase)));
+            try {
+                $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
+                $parsedTestDefinition->setDestination($destinationData);
+            } catch (SetupException $exception) {
+                $this->logger->alert($exception->getMessage());
+            }
 
             /** @var array<array<string>> $tests */
             $tests = $testDefinition['tests'];
@@ -129,16 +129,14 @@ class DefaultLoader implements Load
         // TODO: Further validate source types to SQL, JSON, XML, CSV.
         if (is_array($parsedTestDefinition['source']) &&
           (empty($parsedTestDefinition['source']['type']) ||
-          empty($parsedTestDefinition['source']['data']) ||
-            empty($parsedTestDefinition['source']['database']))) {
+          empty($parsedTestDefinition['source']['data']))) {
             throw new SetupException("Test definition source is missing");
         }
 
         // TODO: Further validate destination types to SQL, JSON, XML.
         if (is_array($parsedTestDefinition['destination']) &&
           (empty($parsedTestDefinition['destination']['type']) ||
-          empty($parsedTestDefinition['destination']['data']) ||
-            empty($parsedTestDefinition['destination']['database']))) {
+          empty($parsedTestDefinition['destination']['data']))) {
             throw new SetupException("Test definition destination is missing");
         }
 

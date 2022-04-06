@@ -132,25 +132,25 @@ class DefaultDefinition implements Definition
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
-        $this->logger->info("Running the tests now...");
+        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
 
-        /** @var array<scalar>|null $sourceData */
         $sourceData = $source->getItem();
-        /** @var array<scalar>|null $destinationData */
         $destinationData = $destination->getItem();
 
-        while ($sourceData && $destinationData) {
-            foreach ($this->getTests() as $test) {
-                $test->execute($sourceData, $destinationData);
-            }
+        // Combining the iterators is required so that the tests can be run for every returned item.
+        $combinedDataSources = new \MultipleIterator();
+        $combinedDataSources->attachIterator($sourceData);
+        $combinedDataSources->attachIterator($destinationData);
 
-            $sourceData = $source->getItem();
-            $destinationData = $destination->getItem();
+        foreach ($combinedDataSources as [$sourceValue, $destinationValue]) {
+            foreach ($this->getTests() as $test) {
+                $test->execute($sourceValue, $destinationValue);
+            }
         }
 
         try {
             Assert::assertTrue(
-                ($sourceData === null) && ($destinationData === null),
+                !$sourceData->valid() && !$destinationData->valid(),
                 "Number of source items does not match number of destination items."
             );
         } catch (ExpectationFailedException $exception) {
