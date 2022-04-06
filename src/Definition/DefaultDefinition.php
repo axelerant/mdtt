@@ -134,9 +134,7 @@ class DefaultDefinition implements Definition
         $destination = $this->getDestination();
         $this->logger->info("Running the tests now...");
 
-        /** @var array<scalar>|null $sourceData */
         $sourceData = $source->getItem();
-        /** @var array<scalar>|null $destinationData */
         $destinationData = $destination->getItem();
 
         $dataSources = new \MultipleIterator();
@@ -150,8 +148,9 @@ class DefaultDefinition implements Definition
         }
 
         try {
-            Assert::assertTrue(
-                ($sourceData === null) && ($destinationData === null),
+            Assert::assertCount(
+                iterator_count($sourceData),
+                $destinationData,
                 "Number of source items does not match number of destination items."
             );
         } catch (ExpectationFailedException $exception) {

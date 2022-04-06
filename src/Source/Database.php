@@ -6,7 +6,6 @@ namespace Mdtt\Source;
 
 use Iterator;
 use Mdtt\DataSource;
-use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
 use Mdtt\Utility\DataSource\Database as DbDataSource;
 use mysqli_result;
@@ -52,13 +51,8 @@ class Database extends DataSource
             );
         }
 
-        /** @var Iterator|false $row */
-        $row = mysqli_fetch_assoc($this->resultSet);
-
-        if ($row === false) {
-            throw new ExecutionException("Something went wrong while retrieving an item from the source.");
+        while ($row = $this->resultSet->fetch_assoc()) {
+            yield $row;
         }
-
-        return $row;
     }
 }
