@@ -148,9 +148,8 @@ class DefaultDefinition implements Definition
         }
 
         try {
-            Assert::assertCount(
-                iterator_count($sourceData),
-                $destinationData,
+            Assert::assertTrue(
+                !$sourceData->valid() && !$destinationData->valid(),
                 "Number of source items does not match number of destination items."
             );
         } catch (ExpectationFailedException $exception) {
