@@ -132,7 +132,7 @@ class DefaultDefinition implements Definition
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
-        $this->logger->info("Running the tests now...");
+        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
 
         $sourceData = $source->getItem();
         $destinationData = $destination->getItem();
