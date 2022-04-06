@@ -93,14 +93,17 @@ group: migration_validation
 # The endpoint that returns the source dataset.
 source:
   type: json
-  data: https://legacy-system.com/api/v1/users
+  data: https://dev.legacy-system.com/api/v1/users
   # The pointer where all the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
   selector: "/results/-/employees"
+  # Basic authentication credentials to access the endpoint. This is optional if the endpoint is publicly accessible.
+  auth_basic: "foo:bar"
 # The endpoint that returns the destination dataset.
 destination:
   type: json
-  data: https://new-system.com/api/v1/users
+  data: https://dev.new-system.com/api/v1/users
   selector: "/results/-/employees"
+  auth_basic: "foo:bar"
 tests:
   -
     sourceField: name
