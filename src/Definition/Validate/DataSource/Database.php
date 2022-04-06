@@ -11,6 +11,6 @@ class Database implements Type
      */
     public function validate(array $rawDataSourceDefinition): bool
     {
-        return !empty($rawDataSourceDefinition['database']);
+        return isset($rawDataSourceDefinition['database']);
     }
 }
