@@ -67,7 +67,7 @@ class Json
         } catch (\Exception $e) {
             throw new ExecutionException(
                 sprintf(
-                    "Something went wrong while looping through the response items. MessageL %s",
+                    "Something went wrong while looping through the response items. Message: %s",
                     $e->getMessage()
                 )
             );
