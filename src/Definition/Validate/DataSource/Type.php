@@ -5,7 +5,7 @@ namespace Mdtt\Definition\Validate\DataSource;
 interface Type
 {
     /**
-     * Validates whether all required information are mentioned for the datasource definition.
+     * Validates whether all required information are mentioned in the datasource definition.
      *
      * @param array<string> $rawDataSourceDefinition
      *
