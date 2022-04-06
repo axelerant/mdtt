@@ -137,11 +137,12 @@ class DefaultDefinition implements Definition
         $sourceData = $source->getItem();
         $destinationData = $destination->getItem();
 
-        $dataSources = new \MultipleIterator();
-        $dataSources->attachIterator($sourceData);
-        $dataSources->attachIterator($destinationData);
+        // Combining the iterators is required so that the tests can be run for every returned item.
+        $combinedDataSources = new \MultipleIterator();
+        $combinedDataSources->attachIterator($sourceData);
+        $combinedDataSources->attachIterator($destinationData);
 
-        foreach ($dataSources as [$sourceValue, $destinationValue]) {
+        foreach ($combinedDataSources as [$sourceValue, $destinationValue]) {
             foreach ($this->getTests() as $test) {
                 $test->execute($sourceValue, $destinationValue);
             }
