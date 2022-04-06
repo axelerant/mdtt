@@ -16,9 +16,9 @@ class Json extends DataSource
     private Items|null $items;
 
     public function __construct(
-      string $data,
-      string $selector,
-      JsonDataSourceUtility $jsonDataSourceUtility
+        string $data,
+        string $selector,
+        JsonDataSourceUtility $jsonDataSourceUtility
     ) {
         parent::__construct($data);
         $this->selector = $selector;
