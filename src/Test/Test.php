@@ -65,6 +65,14 @@ abstract class Test
     }
 
     /**
+     * @param \Mdtt\Transform\Transform $transform
+     */
+    public function setTransform(Transform $transform): void
+    {
+        $this->transform = $transform;
+    }
+
+    /**
      * Compare the source and the destination data.
      *
      * @param array<scalar> $sourceData
