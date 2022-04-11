@@ -29,9 +29,14 @@ class DefaultTest extends Test
             $destinationData[$this->getDestinationField()]
         ));
 
+        $sourceValue = $sourceData[$this->getSourceField()];
+        if ($this->getTransform() !== null) {
+            $sourceValue = $this->getTransform()->process($sourceData[$this->getSourceField()]);
+        }
+
         try {
             Assert::assertSame(
-                $sourceData[$this->getSourceField()],
+                $sourceValue,
                 $destinationData[$this->getDestinationField()],
                 "Source and destination does not match."
             );

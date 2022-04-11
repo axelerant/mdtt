@@ -94,7 +94,11 @@ class DefaultLoader implements Load
                 /** @var string $destinationField */
                 $destinationField = $test['destinationField'];
 
-                $parsedTests[] = new DefaultTest($sourceField, $destinationField, $this->logger);
+                $parsedTests[] = new DefaultTest(
+                    $sourceField,
+                    $destinationField,
+                    $this->logger
+                );
             }
             $parsedTestDefinition->setTests($parsedTests);
 
