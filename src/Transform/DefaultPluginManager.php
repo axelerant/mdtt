@@ -13,7 +13,7 @@ class DefaultPluginManager implements PluginManager
     {
         $pluginId = ucwords($id);
 
-        require "tests/mdtt/Plugin/Transform/$pluginId.php";
+        require "tests/mdtt/src/Plugin/Transform/$pluginId.php";
 
         /** @var \Mdtt\Transform\Transform $pluginInstance */
         $pluginInstance = new $pluginId();
