@@ -8,6 +8,7 @@ use Mdtt\Definition\DefaultDefinition;
 use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
 use Mdtt\Test\DefaultTest;
+use Mdtt\Transform\PluginManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
@@ -16,11 +17,13 @@ class DefaultLoader implements Load
 {
     private LoggerInterface $logger;
     private Validator $dataSourceValidator;
+    private PluginManager $transformPluginManager;
 
-    public function __construct(LoggerInterface $logger, Validator $validator)
+    public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager)
     {
         $this->logger = $logger;
         $this->dataSourceValidator = $validator;
+        $this->transformPluginManager = $transformPluginManager;
     }
 
     /**
@@ -93,12 +96,17 @@ class DefaultLoader implements Load
                 $sourceField = $test['sourceField'];
                 /** @var string $destinationField */
                 $destinationField = $test['destinationField'];
-
-                $parsedTests[] = new DefaultTest(
-                    $sourceField,
-                    $destinationField,
-                    $this->logger
+                $testInstance = new DefaultTest(
+                  $sourceField,
+                  $destinationField,
+                  $this->logger
                 );
+
+                if (isset($test['transform'])) {
+                    $testInstance->setTransform($this->transformPluginManager->loadById($test['transform']));
+                }
+
+                $parsedTests[] = $testInstance;
             }
             $parsedTestDefinition->setTests($parsedTests);
 

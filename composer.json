@@ -34,7 +34,10 @@
         "psr-4": {
             "Mdtt\\": "src"
         },
-        "classmap": ["src"]
+        "classmap": [
+            "src",
+            "tests/mdtt/Plugin/Transform"
+        ]
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.6",
