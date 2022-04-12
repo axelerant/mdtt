@@ -33,6 +33,13 @@ class DefaultTest extends Test
         $sourceValue = $sourceData[$this->getSourceField()];
         if ($this->getTransform() !== null) {
             $sourceValue = $this->getTransform()->process($sourceValue);
+
+            $this->getLogger()->notice(sprintf(
+                "Applied transform: %s on source. Comparing source %s with destination %s",
+                $this->getTransform()->name(),
+                $sourceValue,
+                $destinationData[$this->getDestinationField()]
+            ));
         }
 
         try {
