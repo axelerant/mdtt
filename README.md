@@ -132,7 +132,7 @@ tests:
 
 The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Trim`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
 
-```injectablephp
+```php
 <?php
 
 // File location: tests/mdtt/src/Plugin/Transform/Trim.php.
