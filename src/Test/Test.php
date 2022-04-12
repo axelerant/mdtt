@@ -12,7 +12,7 @@ abstract class Test
     private string $sourceField;
     private string $destinationField;
     private LoggerInterface $logger;
-    private Transform $transform;
+    private ?Transform $transform;
 
     /**
      * @return \Psr\Log\LoggerInterface

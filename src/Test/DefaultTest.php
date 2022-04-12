@@ -29,9 +29,10 @@ class DefaultTest extends Test
             $destinationData[$this->getDestinationField()]
         ));
 
+        /** @var string|int $sourceValue */
         $sourceValue = $sourceData[$this->getSourceField()];
         if ($this->getTransform() !== null) {
-            $sourceValue = $this->getTransform()->process($sourceData[$this->getSourceField()]);
+            $sourceValue = $this->getTransform()->process($sourceValue);
         }
 
         try {

@@ -12,7 +12,8 @@ class DefaultPluginManager implements PluginManager
     public function loadById(string $id): Transform
     {
         $pluginId = ucwords($id);
-        /** @var \Mdtt\Transform\Transform */
-        return new $pluginId();
+        /** @var \Mdtt\Transform\Transform $pluginInstance */
+        $pluginInstance = new $pluginId();
+        return $pluginInstance;
     }
 }
