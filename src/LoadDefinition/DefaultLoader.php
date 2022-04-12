@@ -108,7 +108,7 @@ class DefaultLoader implements Load
                 );
 
                 if (isset($test['transform'])) {
-                    if (isset($this->transformPlugins[$test['transform']])) {
+                    if (!isset($this->transformPlugins[$test['transform']])) {
                         $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
                         $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
                     } else {
