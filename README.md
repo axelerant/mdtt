@@ -15,8 +15,11 @@ composer require --dev axelerant/mdtt
 Basically you follow these steps:
 
 1. Specify test specifications
-1. Specify test definitions
-1. Run the tests
+2. Specify test definitions
+3. _Optionally_, specify transform plugins
+4. Run the tests
+
+You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
 
 ### Test specification
 
@@ -113,7 +116,51 @@ tests:
     destinationField: email
 ```
 
-You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
+### Transform plugin
+
+There could be a scenario where instead of directly storing the data from source, it must be transformed in some way (say, whitespaces must be stripped) before storing it in the destination database. A QA engineer can write their own plugin, to validate the business logic that does the transformation.
+
+The test case would look like this:
+
+```yaml
+tests:
+  -
+    sourceField: name
+    transform: trim
+    destinationField: name
+```
+
+The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Trim`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
+
+```php
+<?php
+
+// File location: tests/mdtt/src/Plugin/Transform/Trim.php.
+
+class Trim implements \Mdtt\Transform\Transform
+{
+    /**
+     * @inheritDoc
+     */
+    public function name(): string
+    {
+        // Specifies the plugin name.
+        // This must be unique, if you have multiple plugin definitions.
+        // The same plugin name must be mentioned in the test case.
+        return "trim";
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function process(mixed $data): mixed
+    {
+        // The logic that does the transformation.
+        return trim($data);
+    }
+}
+
+```
 
 ## Run tests
 

@@ -20,6 +20,11 @@ services:
 
   Psr\Log\LoggerInterface: '@logger'
 
+  transform_plugin_manager:
+    class: \Mdtt\Transform\DefaultPluginManager
+
+  Mdtt\Transform\PluginManager: '@transform_plugin_manager'
+
   Mdtt\:
     lazy: true
     resource: '../src/*'
