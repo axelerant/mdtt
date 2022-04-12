@@ -15,8 +15,11 @@ composer require --dev axelerant/mdtt
 Basically you follow these steps:
 
 1. Specify test specifications
-1. Specify test definitions
-1. Run the tests
+2. Specify test definitions
+3. _Optionally_, specify transform plugins
+4. Run the tests
+
+You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
 
 ### Test specification
 
@@ -113,7 +116,21 @@ tests:
     destinationField: email
 ```
 
-You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
+### Transform plugin
+
+There could be a scenario where instead of directly storing the data from source, it must be transformed in some way (say, text must be uppercased) before storing it in the destination database. A QA engineer can write their own plugin, to validate the business logic that does the transformation.
+
+The test case would look like this:
+
+```yaml
+tests:
+  -
+    sourceField: name
+    transform: uppercase
+    destinationField: name
+```
+
+The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Uppercase`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
 
 ## Run tests
 
