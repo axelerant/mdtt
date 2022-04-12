@@ -144,6 +144,9 @@ class Trim implements \Mdtt\Transform\Transform
      */
     public function name(): string
     {
+        // Specifies the plugin name.
+        // This must be unique, if you have multiple plugin definitions.
+        // The same plugin name must be mentioned in the test case.
         return "trim";
     }
 
@@ -152,6 +155,7 @@ class Trim implements \Mdtt\Transform\Transform
      */
     public function process(mixed $data): mixed
     {
+        // The logic that does the transformation.
         return trim($data);
     }
 }
