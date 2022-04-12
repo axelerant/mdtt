@@ -97,9 +97,9 @@ class DefaultLoader implements Load
                 /** @var string $destinationField */
                 $destinationField = $test['destinationField'];
                 $testInstance = new DefaultTest(
-                  $sourceField,
-                  $destinationField,
-                  $this->logger
+                    $sourceField,
+                    $destinationField,
+                    $this->logger
                 );
 
                 if (isset($test['transform'])) {
