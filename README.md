@@ -118,7 +118,7 @@ tests:
 
 ### Transform plugin
 
-There could be a scenario where instead of directly storing the data from source, it must be transformed in some way (say, text must be uppercased) before storing it in the destination database. A QA engineer can write their own plugin, to validate the business logic that does the transformation.
+There could be a scenario where instead of directly storing the data from source, it must be transformed in some way (say, whitespaces must be stripped) before storing it in the destination database. A QA engineer can write their own plugin, to validate the business logic that does the transformation.
 
 The test case would look like this:
 
@@ -126,11 +126,37 @@ The test case would look like this:
 tests:
   -
     sourceField: name
-    transform: uppercase
+    transform: trim
     destinationField: name
 ```
 
-The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Uppercase`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
+The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Trim`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
+
+```injectablephp
+<?php
+
+// File location: tests/mdtt/src/Plugin/Transform/Trim.php.
+
+class Trim implements \Mdtt\Transform\Transform
+{
+    /**
+     * @inheritDoc
+     */
+    public function name(): string
+    {
+        return "trim";
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function process(mixed $data): mixed
+    {
+        return trim($data);
+    }
+}
+
+```
 
 ## Run tests
 
