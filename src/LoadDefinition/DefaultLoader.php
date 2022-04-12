@@ -9,6 +9,7 @@ use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
 use Mdtt\Test\DefaultTest;
 use Mdtt\Transform\PluginManager;
+use Mdtt\Transform\Transform;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
@@ -18,6 +19,10 @@ class DefaultLoader implements Load
     private LoggerInterface $logger;
     private Validator $dataSourceValidator;
     private PluginManager $transformPluginManager;
+    /**
+     * @var array<string, Transform>
+     */
+    private array $transformPlugins;
 
     public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager)
     {
@@ -103,7 +108,14 @@ class DefaultLoader implements Load
                 );
 
                 if (isset($test['transform'])) {
-                    $testInstance->setTransform($this->transformPluginManager->loadById($test['transform']));
+                    if (isset($this->transformPlugins[$test['transform']])) {
+                        $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
+                        $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
+                    } else {
+                        $transformPlugin = $this->transformPlugins[$test['transform']];
+                    }
+
+                    $testInstance->setTransform($transformPlugin);
                 }
 
                 $parsedTests[] = $testInstance;
