@@ -137,7 +137,9 @@ class DefaultDefinition implements Definition
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();
 
+        /** @var array<string>|array<int> $sourceValue */
         foreach ($sourceIterator as $sourceValue) {
+            /** @var array<string>|array<int> $destinationValue */
             $destinationValue = $destinationIterator->current();
             $testResult = true;
 
