@@ -6,7 +6,7 @@ namespace Mdtt\Source;
 
 use Iterator;
 use JsonMachine\Items;
-use Mdtt\DataSource;
+use Mdtt\DataSource\DataSource;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
 class Json extends DataSource
@@ -36,7 +36,7 @@ class Json extends DataSource
     /**
      * @inheritDoc
      */
-    public function getItem(): Iterator
+    public function getIterator(): Iterator
     {
         if (!isset($this->items)) {
             $this->items = $this->jsonDataSourceUtility->getItems($this->data, $this->selector);

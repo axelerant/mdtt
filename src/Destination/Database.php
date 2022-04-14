@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\Destination;
 
 use Iterator;
-use Mdtt\DataSource;
+use Mdtt\DataSource\DataSource;
 use Mdtt\Exception\SetupException;
 use Mdtt\Utility\DataSource\Database as DbDatabase;
 use mysqli_result;
@@ -24,7 +24,7 @@ class Database extends DataSource
     /**
      * @inheritDoc
      */
-    public function getItem(): Iterator
+    public function getIterator(): Iterator
     {
         $specification = require "tests/mdtt/spec.php";
 

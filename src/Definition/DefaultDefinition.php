@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
-use Mdtt\DataSource;
+use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
@@ -94,7 +94,7 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\DataSource
+     * @return \Mdtt\DataSource\DataSource
      */
     public function getSource(): DataSource
     {
@@ -102,7 +102,7 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @param \Mdtt\DataSource $source
+     * @param \Mdtt\DataSource\DataSource $source
      */
     public function setSource(DataSource $source): void
     {
@@ -110,7 +110,7 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\DataSource
+     * @return \Mdtt\DataSource\DataSource
      */
     public function getDestination(): DataSource
     {
@@ -118,7 +118,7 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @param \Mdtt\DataSource $destination
+     * @param \Mdtt\DataSource\DataSource $destination
      */
     public function setDestination(DataSource $destination): void
     {
@@ -134,8 +134,8 @@ class DefaultDefinition implements Definition
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
 
-        $sourceData = $source->getItem();
-        $destinationData = $destination->getItem();
+        $sourceData = $source->getIterator();
+        $destinationData = $destination->getIterator();
 
         // Combining the iterators is required so that the tests can be run for every returned item.
         $combinedDataSources = new \MultipleIterator();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mdtt;
+namespace Mdtt\DataSource;
 
 use Iterator;
 
@@ -14,9 +14,9 @@ abstract class DataSource
     }
 
     /**
-     * Returns an item from the source.
+     * Returns the datasource iterator.
      *
      * @return Iterator
      */
-    abstract public function getItem(): Iterator;
+    abstract public function getIterator(): Iterator;
 }
