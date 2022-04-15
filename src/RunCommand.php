@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mdtt;
 
 use Mdtt\Exception\SetupException;
-use Mdtt\LoadDefinition\DefaultLoader;
+use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -18,9 +18,9 @@ class RunCommand extends Command
 {
     private Email $email;
     private LoggerInterface $logger;
-    private DefaultLoader $definitionLoader;
+    private Load $definitionLoader;
 
-    public function __construct(Email $email, LoggerInterface $logger, DefaultLoader $loader, string $name = null)
+    public function __construct(Email $email, LoggerInterface $logger, Load $loader, string $name = null)
     {
         parent::__construct($name);
         $this->email = $email;

@@ -25,6 +25,11 @@ services:
 
   Mdtt\Transform\PluginManager: '@transform_plugin_manager'
 
+  load_definition:
+    class: \Mdtt\LoadDefinition\DefaultLoader
+
+  Mdtt\LoadDefinition\Load: '@load_definition'
+
   Mdtt\:
     lazy: true
     resource: '../src/*'
