@@ -47,8 +47,13 @@ class RunCommand extends Command
         try {
             $this->logger->info("Loading test definitions");
 
+            /** @var array<string> $rawTestDefinitions */
+            $rawTestDefinitions = $this->definitionLoader->scan([
+              "tests/mdtt/*.yml",
+              "tests/mdtt/*.yaml"
+            ]);
             /** @var \Mdtt\Definition\Definition[] $definitions */
-            $definitions = $this->definitionLoader->validate();
+            $definitions = $this->definitionLoader->validate($rawTestDefinitions);
             foreach ($definitions as $definition) {
                 $definition->runTests();
             }
