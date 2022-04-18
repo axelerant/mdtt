@@ -180,5 +180,14 @@ class DefaultDefinition implements Definition
                 $test->execute($sourceValue, $destinationValue);
             }
         }
+
+        try {
+            Assert::assertTrue(
+                !$sourceIterator->valid() && !$destinationIterator->valid(),
+                "Number of source items does not match number of destination items."
+            );
+        } catch (ExpectationFailedException $exception) {
+            $this->logger->emergency($exception->getMessage());
+        }
     }
 }
