@@ -28,7 +28,8 @@
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
         "php-cs-fixer": "./vendor/bin/php-cs-fixer fix src",
         "phpstan": "./vendor/bin/phpstan analyse src --level max",
-        "test": "composer php-cs && composer phpstan"
+        "phpunit": "./vendor/bin/phpunit tests",
+        "test": "composer php-cs && composer phpstan && composer phpunit"
     },
     "autoload": {
         "psr-4": {
