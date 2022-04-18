@@ -21,12 +21,6 @@ Basically you follow these steps:
 
 You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
 
-You can view all available tool options by doing this:
-
-```shell
-./vendor/bin/mdtt --help
-```
-
 ### Test specification
 
 Specify the test specification inside the directory `tests/mdtt`. The specification must be written inside the `spec.php`. Below is a sample specification:
@@ -178,6 +172,12 @@ class Trim implements \Mdtt\Transform\Transform
 
 ```shell
 ./vendor/bin/mdtt run -vvv
+```
+
+You can view all available options by doing this:
+
+```shell
+./vendor/bin/mdtt run --help
 ```
 
 ### Specify email where notification will be sent when test completes
