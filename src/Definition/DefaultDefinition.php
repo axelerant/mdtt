@@ -137,6 +137,9 @@ class DefaultDefinition implements Definition
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();
 
+        $sourceRowCount = 0;
+        $destinationRowCount = 0;
+
         /** @var array<string>|array<int> $sourceValue */
         foreach ($sourceIterator as $sourceValue) {
             /** @var array<string>|array<int> $destinationValue */
@@ -149,12 +152,16 @@ class DefaultDefinition implements Definition
 
             if ($testResult) {
                 $destinationIterator->next();
+                $destinationRowCount++;
             }
+
+            $sourceRowCount++;
         }
 
         try {
-            Assert::assertTrue(
-                !$sourceIterator->valid() && !$destinationIterator->valid(),
+            Assert::assertSame(
+                $sourceRowCount,
+                $destinationRowCount,
                 "Number of source items does not match number of destination items."
             );
         } catch (ExpectationFailedException $exception) {
