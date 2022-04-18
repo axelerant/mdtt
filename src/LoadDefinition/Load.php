@@ -5,19 +5,23 @@ namespace Mdtt\LoadDefinition;
 interface Load
 {
     /**
-     * Scans the test directory for test definitions.
+     * Scans the provided pattern for test definitions.
      *
-     * @return array<string>
+     * @param array<string> $locationPatterns
+     *
+     * @return array<string> Raw test definition.
      * @throws \Symfony\Component\Filesystem\Exception\IOException
      * @throws \Mdtt\Exception\SetupException
      */
-    public function scan(): array;
+    public function scan(array $locationPatterns): array;
 
     /**
-     * Parses and validates the test definitions.
+     * Parses and validates the raw test definitions.
+     *
+     * @param array<string> $rawTestDefinitions
      *
      * @return array<\Mdtt\Definition\Definition>
      * @throws \Mdtt\Exception\SetupException
      */
-    public function validate(): iterable;
+    public function validate(array $rawTestDefinitions): iterable;
 }

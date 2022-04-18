@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mdtt;
 
 use Mdtt\Exception\SetupException;
-use Mdtt\LoadDefinition\DefaultLoader;
+use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -18,9 +18,9 @@ class RunCommand extends Command
 {
     private Email $email;
     private LoggerInterface $logger;
-    private DefaultLoader $definitionLoader;
+    private Load $definitionLoader;
 
-    public function __construct(Email $email, LoggerInterface $logger, DefaultLoader $loader, string $name = null)
+    public function __construct(Email $email, LoggerInterface $logger, Load $loader, string $name = null)
     {
         parent::__construct($name);
         $this->email = $email;
@@ -47,8 +47,13 @@ class RunCommand extends Command
         try {
             $this->logger->info("Loading test definitions");
 
+            /** @var array<string> $rawTestDefinitions */
+            $rawTestDefinitions = $this->definitionLoader->scan([
+              "tests/mdtt/*.yml",
+              "tests/mdtt/*.yaml"
+            ]);
             /** @var \Mdtt\Definition\Definition[] $definitions */
-            $definitions = $this->definitionLoader->validate();
+            $definitions = $this->definitionLoader->validate($rawTestDefinitions);
             foreach ($definitions as $definition) {
                 $definition->runTests();
             }
