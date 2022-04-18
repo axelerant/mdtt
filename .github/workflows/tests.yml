@@ -40,3 +40,6 @@ jobs:
 
       - name: Analyse PHP Code (PHPStan)
         run: composer phpstan
+
+      - name: Validate code quality
+        run: composer phpunit-with-coverage

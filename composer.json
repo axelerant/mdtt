@@ -29,7 +29,8 @@
         "php-cs-fixer": "./vendor/bin/php-cs-fixer fix src",
         "phpstan": "./vendor/bin/phpstan analyse src --level max",
         "phpunit": "./vendor/bin/phpunit tests",
-        "test": "composer php-cs && composer phpstan && composer phpunit"
+        "phpunit-with-coverage": "./vendor/bin/phpunit tests --coverage-clover coverage.xml",
+        "test": "composer php-cs && composer phpstan && composer phpunit-with-coverage"
     },
     "autoload": {
         "psr-4": {
