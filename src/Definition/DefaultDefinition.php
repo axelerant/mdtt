@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
+use Iterator;
 use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
@@ -125,15 +126,10 @@ class DefaultDefinition implements Definition
         $this->destination = $destination;
     }
 
-    private function runCommonTests(): void
-    {
-        $source = $this->getSource();
-        $destination = $this->getDestination();
-        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
-
-        $sourceIterator = $source->getIterator();
-        $destinationIterator = $destination->getIterator();
-
+    private function runCommonTests(
+        Iterator $sourceIterator,
+        Iterator $destinationIterator
+    ): void {
         $sourceRowCounts = iterator_count($sourceIterator);
         $destinationRowCounts = iterator_count($destinationIterator);
 
@@ -160,7 +156,14 @@ class DefaultDefinition implements Definition
      */
     public function runSmokeTests(): void
     {
-        $this->runCommonTests();
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+        $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->id));
+
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
+        $this->runCommonTests($sourceIterator, $destinationIterator);
     }
 
     /**
@@ -168,14 +171,14 @@ class DefaultDefinition implements Definition
      */
     public function runTests(): void
     {
-        $this->runCommonTests();
-
         $source = $this->getSource();
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
 
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();
+
+        $this->runCommonTests($sourceIterator, $destinationIterator);
 
         // Make sure that the comparison starts from the beginning.
         $sourceIterator->rewind();
