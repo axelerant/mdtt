@@ -7,7 +7,6 @@ namespace Mdtt\Definition;
 use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
 
 class DefaultDefinition implements Definition
@@ -125,36 +124,64 @@ class DefaultDefinition implements Definition
         $this->destination = $destination;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function runTests(): void
+    private function runCommonTests(): void
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
 
-        $sourceData = $source->getIterator();
-        $destinationData = $destination->getIterator();
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
+        $sourceRowCounts = iterator_count($sourceIterator);
+        $destinationRowCounts = iterator_count($destinationIterator);
+
+        Assert::assertSame(
+            $sourceRowCounts,
+            $destinationRowCounts,
+            sprintf(
+                "Source row count: %d does not matches with destination row count: %d",
+                $sourceRowCounts,
+                $destinationRowCounts
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function runSmokeTests(): void
+    {
+        $this->runCommonTests();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function runTests(): void
+    {
+        $this->runCommonTests();
+
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
+
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
+        // Make sure that the comparison starts from the beginning.
+        $sourceIterator->rewind();
+        $destinationIterator->rewind();
 
         // Combining the iterators is required so that the tests can be run for every returned item.
-        $combinedDataSources = new \MultipleIterator();
-        $combinedDataSources->attachIterator($sourceData);
-        $combinedDataSources->attachIterator($destinationData);
+        $combinedIterators = new \MultipleIterator();
+        $combinedIterators->attachIterator($sourceIterator);
+        $combinedIterators->attachIterator($destinationIterator);
 
-        foreach ($combinedDataSources as [$sourceValue, $destinationValue]) {
+        foreach ($combinedIterators as [$sourceValue, $destinationValue]) {
             foreach ($this->getTests() as $test) {
                 $test->execute($sourceValue, $destinationValue);
             }
-        }
-
-        try {
-            Assert::assertTrue(
-                !$sourceData->valid() && !$destinationData->valid(),
-                "Number of source items does not match number of destination items."
-            );
-        } catch (ExpectationFailedException $exception) {
-            $this->logger->emergency($exception->getMessage());
         }
     }
 }

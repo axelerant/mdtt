@@ -9,4 +9,10 @@ interface Definition
      * @return void
      */
     public function runTests(): void;
+
+    /**
+     * Runs smoke tests.
+     * @return void
+     */
+    public function runSmokeTests(): void;
 }
