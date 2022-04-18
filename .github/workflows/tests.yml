@@ -40,3 +40,11 @@ jobs:
 
       - name: Analyse PHP Code (PHPStan)
         run: composer phpstan
+
+      - name: Validate code quality
+        run: composer phpunit-with-coverage
+
+      - name: Send code coverage report to Codecov.io
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

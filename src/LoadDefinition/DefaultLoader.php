@@ -34,35 +34,32 @@ class DefaultLoader implements Load
     /**
      * @inheritDoc
      */
-    public function scan(): array
+    public function scan(array $locationPatterns): array
     {
-        $ymlTestDefinitions = glob("tests/mdtt/*.yml", GLOB_ERR);
-        if ($ymlTestDefinitions === false) {
-            throw new IOException("Error occurred while loading test definitions");
+        $rawTestDefinitions = [];
+
+        foreach ($locationPatterns as $locationPattern) {
+            $testDefinitions = glob($locationPattern, GLOB_ERR);
+
+            if ($testDefinitions === false) {
+                throw new IOException("Error occurred while loading test definitions");
+            }
+
+            $rawTestDefinitions[] = $testDefinitions;
         }
 
-        $yamlTestDefinitions = glob("tests/mdtt/*.yaml", GLOB_ERR);
-        if ($yamlTestDefinitions === false) {
-            throw new IOException("Error occurred while loading test definitions");
-        }
-
-        $testDefinitions = array_merge([], $ymlTestDefinitions, $yamlTestDefinitions);
-        if (!$testDefinitions) {
-            throw new SetupException("No test definitions found.");
-        }
-
-        return $testDefinitions;
+        return array_merge([], ...$rawTestDefinitions);
     }
 
     /**
      * @inheritDoc
      */
-    public function validate(): iterable
+    public function validate(array $rawTestDefinitions): iterable
     {
         /** @var array<array<string>>|array<array<array<string>>> $testDefinitions */
         $testDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
-        }, $this->scan());
+        }, $rawTestDefinitions);
         $parsedTestDefinitions = [];
 
         foreach ($testDefinitions as $testDefinition) {
