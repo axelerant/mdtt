@@ -39,10 +39,10 @@ class RunCommand extends Command
                 'The email address where the notification will be sent when test completes.'
             )
             ->addOption(
-              'smoke-test',
-              null,
-              InputOption::VALUE_NONE,
-              'Specifies whether it should perform a smoke test, instead of a detailed row by row comparison.'
+                'smoke-test',
+                null,
+                InputOption::VALUE_NONE,
+                'Specifies whether it should perform a smoke test, instead of a detailed row by row comparison.'
             );
     }
 
