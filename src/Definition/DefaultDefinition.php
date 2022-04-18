@@ -7,6 +7,7 @@ namespace Mdtt\Definition;
 use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
 
 class DefaultDefinition implements Definition
@@ -136,15 +137,22 @@ class DefaultDefinition implements Definition
         $sourceRowCounts = iterator_count($sourceIterator);
         $destinationRowCounts = iterator_count($destinationIterator);
 
-        Assert::assertSame(
-            $sourceRowCounts,
-            $destinationRowCounts,
-            sprintf(
-                "Source row count: %d does not matches with destination row count: %d",
+        try {
+            Assert::assertSame(
                 $sourceRowCounts,
-                $destinationRowCounts
-            )
-        );
+                $destinationRowCounts,
+                sprintf(
+                    "Source row count: %d does not matches with destination row count: %d",
+                    $sourceRowCounts,
+                    $destinationRowCounts
+                )
+            );
+        } catch (ExpectationFailedException $exception) {
+            $this->logger->emergency($exception->getMessage(), [
+                'Source row count' => $sourceRowCounts,
+                'Destination row count' => $destinationRowCounts,
+            ]);
+        }
     }
 
     /**
