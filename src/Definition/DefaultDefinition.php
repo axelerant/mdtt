@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
-use Iterator;
 use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
@@ -126,10 +125,18 @@ class DefaultDefinition implements Definition
         $this->destination = $destination;
     }
 
-    private function runCommonTests(
-        Iterator $sourceIterator,
-        Iterator $destinationIterator
-    ): void {
+    /**
+     * @inheritDoc
+     */
+    public function runSmokeTests(): void
+    {
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+        $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->id));
+
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
         $sourceRowCounts = iterator_count($sourceIterator);
         $destinationRowCounts = iterator_count($destinationIterator);
 
@@ -145,25 +152,10 @@ class DefaultDefinition implements Definition
             );
         } catch (ExpectationFailedException $exception) {
             $this->logger->emergency($exception->getMessage(), [
-                'Source row count' => $sourceRowCounts,
-                'Destination row count' => $destinationRowCounts,
+              'Source row count' => $sourceRowCounts,
+              'Destination row count' => $destinationRowCounts,
             ]);
         }
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function runSmokeTests(): void
-    {
-        $source = $this->getSource();
-        $destination = $this->getDestination();
-        $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->id));
-
-        $sourceIterator = $source->getIterator();
-        $destinationIterator = $destination->getIterator();
-
-        $this->runCommonTests($sourceIterator, $destinationIterator);
     }
 
     /**
@@ -177,12 +169,6 @@ class DefaultDefinition implements Definition
 
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();
-
-        $this->runCommonTests($sourceIterator, $destinationIterator);
-
-        // Make sure that the comparison starts from the beginning.
-        $sourceIterator->rewind();
-        $destinationIterator->rewind();
 
         // Combining the iterators is required so that the tests can be run for every returned item.
         $combinedIterators = new \MultipleIterator();
