@@ -4,21 +4,15 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
-use Mdtt\DataSource;
-use Mdtt\Test\Test;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
 
-class DefaultDefinition implements Definition
+class DefaultDefinition extends Definition
 {
-    private string $id;
     private string $description;
     private string $group;
-    private DataSource $source;
-    private DataSource $destination;
-    /** @var array<Test> */
-    private array $tests;
+
     private LoggerInterface $logger;
 
     /**
@@ -27,38 +21,6 @@ class DefaultDefinition implements Definition
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    /**
-     * @return \Mdtt\Test\Test[]
-     */
-    public function getTests(): array
-    {
-        return $this->tests;
-    }
-
-    /**
-     * @param \Mdtt\Test\Test[] $tests
-     */
-    public function setTests(array $tests): void
-    {
-        $this->tests = $tests;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     */
-    public function setId(string $id): void
-    {
-        $this->id = $id;
     }
 
     /**
@@ -94,45 +56,13 @@ class DefaultDefinition implements Definition
     }
 
     /**
-     * @return \Mdtt\DataSource
-     */
-    public function getSource(): DataSource
-    {
-        return $this->source;
-    }
-
-    /**
-     * @param \Mdtt\DataSource $source
-     */
-    public function setSource(DataSource $source): void
-    {
-        $this->source = $source;
-    }
-
-    /**
-     * @return \Mdtt\DataSource
-     */
-    public function getDestination(): DataSource
-    {
-        return $this->destination;
-    }
-
-    /**
-     * @param \Mdtt\DataSource $destination
-     */
-    public function setDestination(DataSource $destination): void
-    {
-        $this->destination = $destination;
-    }
-
-    /**
      * @inheritDoc
      */
     public function runTests(): void
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
-        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->id));
+        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->getId()));
 
         $sourceData = $source->getItem();
         $destinationData = $destination->getItem();
