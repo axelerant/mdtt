@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
+use Mdtt\Definition\Definition;
 use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
 use Mdtt\Test\DefaultTest;
@@ -71,70 +72,125 @@ class DefaultLoader implements Load
             $id = $testDefinition['id'];
             $parsedTestDefinition->setId($id);
 
-            /** @var array<string> $sourceInformation */
-            $sourceInformation = $testDefinition['source'];
-            try {
-                $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
-                $parsedTestDefinition->setSource($sourceData);
-            } catch (SetupException $exception) {
-                $this->logger->alert($exception->getMessage());
-            }
+            $this->doPopulateSource($testDefinition, $parsedTestDefinition);
 
-            /** @var array<string> $destinationInformation */
-            $destinationInformation = $testDefinition['destination'];
-            try {
-                $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
-                $parsedTestDefinition->setDestination($destinationData);
-            } catch (SetupException $exception) {
-                $this->logger->alert($exception->getMessage());
-            }
+            $this->doPopulateDestination($testDefinition, $parsedTestDefinition);
 
-            /** @var array<array<string>> $tests */
-            $tests = $testDefinition['tests'];
-            /** @var array<\Mdtt\Test\Test> $parsedTests */
-            $parsedTests = [];
-            foreach ($tests as $test) {
-                /** @var string $sourceField */
-                $sourceField = $test['sourceField'];
-                /** @var string $destinationField */
-                $destinationField = $test['destinationField'];
-                $testInstance = new DefaultTest(
-                    $sourceField,
-                    $destinationField,
-                    $this->logger
-                );
+            $this->doPopulateTests($testDefinition, $parsedTestDefinition);
 
-                if (isset($test['transform'])) {
-                    if (!isset($this->transformPlugins[$test['transform']])) {
-                        $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
-                        $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
-                    } else {
-                        $transformPlugin = $this->transformPlugins[$test['transform']];
-                    }
+            $this->doPopulateDescription($testDefinition, $parsedTestDefinition);
 
-                    $testInstance->setTransform($transformPlugin);
-                }
-
-                $parsedTests[] = $testInstance;
-            }
-            $parsedTestDefinition->setTests($parsedTests);
-
-            /** @var ?string $description */
-            $description = $testDefinition['description'] ?? null;
-            if ($description) {
-                $parsedTestDefinition->setDescription($description);
-            }
-
-            /** @var ?string $group */
-            $group = $testDefinition['group'] ?? null;
-            if ($group) {
-                $parsedTestDefinition->setGroup($group);
-            }
+            $this->doPopulateGroup($testDefinition, $parsedTestDefinition);
 
             $parsedTestDefinitions[] = $parsedTestDefinition;
         }
 
         return $parsedTestDefinitions;
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $testDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateSource(array $testDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<string> $sourceInformation */
+        $sourceInformation = $testDefinition['source'];
+        try {
+            $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
+            $parsedTestDefinition->setSource($sourceData);
+        } catch (SetupException $exception) {
+            $this->logger->alert($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $testDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateDestination(array $testDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<string> $destinationInformation */
+        $destinationInformation = $testDefinition['destination'];
+        try {
+            $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
+            $parsedTestDefinition->setDestination($destinationData);
+        } catch (SetupException $exception) {
+            $this->logger->alert($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $testDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateTests(array $testDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<array<string>> $tests */
+        $tests = $testDefinition['tests'];
+        /** @var array<\Mdtt\Test\Test> $parsedTests */
+        $parsedTests = [];
+        foreach ($tests as $test) {
+            /** @var string $sourceField */
+            $sourceField = $test['sourceField'];
+            /** @var string $destinationField */
+            $destinationField = $test['destinationField'];
+            $testInstance = new DefaultTest(
+                $sourceField,
+                $destinationField,
+                $this->logger
+            );
+
+            if (isset($test['transform'])) {
+                if (!isset($this->transformPlugins[$test['transform']])) {
+                    $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
+                    $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
+                } else {
+                    $transformPlugin = $this->transformPlugins[$test['transform']];
+                }
+
+                $testInstance->setTransform($transformPlugin);
+            }
+
+            $parsedTests[] = $testInstance;
+        }
+        $parsedTestDefinition->setTests($parsedTests);
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $testDefinition
+     * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateDescription(array $testDefinition, DefaultDefinition $parsedTestDefinition): void
+    {
+        /** @var ?string $description */
+        $description = $testDefinition['description'] ?? null;
+        if ($description) {
+            $parsedTestDefinition->setDescription($description);
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $testDefinition
+     * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateGroup(array $testDefinition, DefaultDefinition $parsedTestDefinition): void
+    {
+        /** @var ?string $group */
+        $group = $testDefinition['group'] ?? null;
+        if ($group) {
+            $parsedTestDefinition->setGroup($group);
+        }
     }
 
     /**
