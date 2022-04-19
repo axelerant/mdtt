@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\LoadDefinition;
 
 use Mdtt\Definition\DefaultDefinition;
+use Mdtt\Definition\Definition;
 use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
 use Mdtt\Test\DefaultTest;
@@ -56,85 +57,140 @@ class DefaultLoader implements Load
      */
     public function validate(array $rawTestDefinitions): iterable
     {
-        /** @var array<array<string>>|array<array<array<string>>> $testDefinitions */
-        $testDefinitions = array_map(static function ($testDefinition) {
+        /** @var array<array<string>>|array<array<array<string>>> $yamlTestDefinitions */
+        $yamlTestDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
         }, $rawTestDefinitions);
         $parsedTestDefinitions = [];
 
-        foreach ($testDefinitions as $testDefinition) {
-            $this->doValidate($testDefinition);
+        foreach ($yamlTestDefinitions as $yamlTestDefinition) {
+            $this->doValidate($yamlTestDefinition);
 
             $parsedTestDefinition = new DefaultDefinition($this->logger);
 
             /** @var string $id */
-            $id = $testDefinition['id'];
+            $id = $yamlTestDefinition['id'];
             $parsedTestDefinition->setId($id);
 
-            /** @var array<string> $sourceInformation */
-            $sourceInformation = $testDefinition['source'];
-            try {
-                $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
-                $parsedTestDefinition->setSource($sourceData);
-            } catch (SetupException $exception) {
-                $this->logger->alert($exception->getMessage());
-            }
+            $this->doPopulateSource($yamlTestDefinition, $parsedTestDefinition);
 
-            /** @var array<string> $destinationInformation */
-            $destinationInformation = $testDefinition['destination'];
-            try {
-                $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
-                $parsedTestDefinition->setDestination($destinationData);
-            } catch (SetupException $exception) {
-                $this->logger->alert($exception->getMessage());
-            }
+            $this->doPopulateDestination($yamlTestDefinition, $parsedTestDefinition);
 
-            /** @var array<array<string>> $tests */
-            $tests = $testDefinition['tests'];
-            /** @var array<\Mdtt\Test\Test> $parsedTests */
-            $parsedTests = [];
-            foreach ($tests as $test) {
-                /** @var string $sourceField */
-                $sourceField = $test['sourceField'];
-                /** @var string $destinationField */
-                $destinationField = $test['destinationField'];
-                $testInstance = new DefaultTest(
-                    $sourceField,
-                    $destinationField,
-                    $this->logger
-                );
+            $this->doPopulateTests($yamlTestDefinition, $parsedTestDefinition);
 
-                if (isset($test['transform'])) {
-                    if (!isset($this->transformPlugins[$test['transform']])) {
-                        $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
-                        $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
-                    } else {
-                        $transformPlugin = $this->transformPlugins[$test['transform']];
-                    }
+            $this->doPopulateDescription($yamlTestDefinition, $parsedTestDefinition);
 
-                    $testInstance->setTransform($transformPlugin);
-                }
-
-                $parsedTests[] = $testInstance;
-            }
-            $parsedTestDefinition->setTests($parsedTests);
-
-            /** @var ?string $description */
-            $description = $testDefinition['description'] ?? null;
-            if ($description) {
-                $parsedTestDefinition->setDescription($description);
-            }
-
-            /** @var ?string $group */
-            $group = $testDefinition['group'] ?? null;
-            if ($group) {
-                $parsedTestDefinition->setGroup($group);
-            }
+            $this->doPopulateGroup($yamlTestDefinition, $parsedTestDefinition);
 
             $parsedTestDefinitions[] = $parsedTestDefinition;
         }
 
         return $parsedTestDefinitions;
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $yamlTestDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateSource(array $yamlTestDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<string> $sourceInformation */
+        $sourceInformation = $yamlTestDefinition['source'];
+        try {
+            $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
+            $parsedTestDefinition->setSource($sourceData);
+        } catch (SetupException $exception) {
+            $this->logger->alert($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $yamlTestDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateDestination(array $yamlTestDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<string> $destinationInformation */
+        $destinationInformation = $yamlTestDefinition['destination'];
+        try {
+            $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
+            $parsedTestDefinition->setDestination($destinationData);
+        } catch (SetupException $exception) {
+            $this->logger->alert($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $yamlTestDefinition
+     * @param \Mdtt\Definition\Definition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateTests(array $yamlTestDefinition, Definition $parsedTestDefinition): void
+    {
+        /** @var array<array<string>> $tests */
+        $tests = $yamlTestDefinition['tests'];
+        /** @var array<\Mdtt\Test\Test> $parsedTests */
+        $parsedTests = [];
+        foreach ($tests as $test) {
+            /** @var string $sourceField */
+            $sourceField = $test['sourceField'];
+            /** @var string $destinationField */
+            $destinationField = $test['destinationField'];
+            $testInstance = new DefaultTest(
+                $sourceField,
+                $destinationField,
+                $this->logger
+            );
+
+            if (isset($test['transform'])) {
+                if (!isset($this->transformPlugins[$test['transform']])) {
+                    $transformPlugin = $this->transformPluginManager->loadById($test['transform']);
+                    $this->transformPlugins[$transformPlugin->name()] = $transformPlugin;
+                } else {
+                    $transformPlugin = $this->transformPlugins[$test['transform']];
+                }
+
+                $testInstance->setTransform($transformPlugin);
+            }
+
+            $parsedTests[] = $testInstance;
+        }
+        $parsedTestDefinition->setTests($parsedTests);
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $yamlTestDefinition
+     * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateDescription(array $yamlTestDefinition, DefaultDefinition $parsedTestDefinition): void
+    {
+        /** @var ?string $description */
+        $description = $yamlTestDefinition['description'] ?? null;
+        if ($description) {
+            $parsedTestDefinition->setDescription($description);
+        }
+    }
+
+    /**
+     * @param array<string>|array<array<string>> $yamlTestDefinition
+     * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
+     *
+     * @return void
+     */
+    private function doPopulateGroup(array $yamlTestDefinition, DefaultDefinition $parsedTestDefinition): void
+    {
+        /** @var ?string $group */
+        $group = $yamlTestDefinition['group'] ?? null;
+        if ($group) {
+            $parsedTestDefinition->setGroup($group);
+        }
     }
 
     /**
