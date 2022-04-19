@@ -48,8 +48,16 @@ class DefaultTest extends Test
                 $destinationData[$this->getDestinationField()],
                 "Source and destination does not match."
             );
+
+            $this->getLogger()->notice("Source and destination matches", [
+                "Source" => $sourceValue,
+                "Destination" => $destinationData,
+            ]);
         } catch (ExpectationFailedException $exception) {
-            $this->getLogger()->emergency($exception->getMessage());
+            $this->getLogger()->emergency($exception->getMessage(), [
+                "Source" => $sourceValue,
+                "Destination" => $destinationData,
+            ]);
         }
     }
 }

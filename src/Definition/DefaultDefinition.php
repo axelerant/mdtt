@@ -144,12 +144,13 @@ class DefaultDefinition implements Definition
             Assert::assertSame(
                 $sourceRowCounts,
                 $destinationRowCounts,
-                sprintf(
-                    "Source row count: %d does not matches with destination row count: %d",
-                    $sourceRowCounts,
-                    $destinationRowCounts
-                )
+                "Source row count does not matches with destination row count"
             );
+
+            $this->logger->notice("Source row count matches with destination row count", [
+              'Source row count' => $sourceRowCounts,
+              'Destination row count' => $destinationRowCounts,
+            ]);
         } catch (ExpectationFailedException $exception) {
             $this->logger->emergency($exception->getMessage(), [
               'Source row count' => $sourceRowCounts,
@@ -184,8 +185,10 @@ class DefaultDefinition implements Definition
         try {
             Assert::assertTrue(
                 !$sourceIterator->valid() && !$destinationIterator->valid(),
-                "Number of source items does not match number of destination items."
+                "Source row count does not matches with destination row count"
             );
+
+            $this->logger->notice("Source row count matches with destination row count");
         } catch (ExpectationFailedException $exception) {
             $this->logger->emergency($exception->getMessage());
         }
