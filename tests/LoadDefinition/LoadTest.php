@@ -67,7 +67,31 @@ class LoadTest extends TestCase
                 "tests/fixtures/negative/validate_public_apis_1.yml"
               ],
               "Test definition id is missing"
-          ]
+          ],
+          [
+            [
+              "tests/fixtures/negative/validate_public_apis_2.yml"
+            ],
+            "Test definition source is missing"
+          ],
+          [
+            [
+              "tests/fixtures/negative/validate_public_apis_3.yml"
+            ],
+            "Test definition destination is missing"
+          ],
+          [
+            [
+              "tests/fixtures/negative/validate_public_apis_4.yml"
+            ],
+            "Test definition tests are missing"
+          ],
+          [
+            [
+              "tests/fixtures/negative/validate_public_apis_5.yml"
+            ],
+            "Test definition tests are missing"
+          ],
         ];
     }
 }

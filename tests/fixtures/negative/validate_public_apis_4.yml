@@ -1,0 +1,12 @@
+id: validate_public_apis
+description: Validate public apis
+group: migration_validation
+source:
+  type: json
+  data: http://localhost:8000
+  selector: ""
+destination:
+  type: json
+  data: http://localhost:8001
+  selector: ""
+tests:
