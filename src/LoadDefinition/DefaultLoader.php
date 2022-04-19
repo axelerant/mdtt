@@ -203,14 +203,12 @@ class DefaultLoader implements Load
             throw new SetupException("Test definition id is missing");
         }
 
-        // TODO: Further validate source types to SQL, JSON, XML, CSV.
         if (is_array($parsedTestDefinition['source']) &&
           (empty($parsedTestDefinition['source']['type']) ||
           empty($parsedTestDefinition['source']['data']))) {
             throw new SetupException("Test definition source is missing");
         }
 
-        // TODO: Further validate destination types to SQL, JSON, XML.
         if (is_array($parsedTestDefinition['destination']) &&
           (empty($parsedTestDefinition['destination']['type']) ||
           empty($parsedTestDefinition['destination']['data']))) {
