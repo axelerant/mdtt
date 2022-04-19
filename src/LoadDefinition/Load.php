@@ -16,7 +16,7 @@ interface Load
     public function scan(array $locationPatterns): array;
 
     /**
-     * Parses and validates the test definitions.
+     * Parses and validates the raw test definitions.
      *
      * @param array<string> $rawTestDefinitions
      *
