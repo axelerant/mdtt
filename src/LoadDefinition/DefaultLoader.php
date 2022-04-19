@@ -57,30 +57,30 @@ class DefaultLoader implements Load
      */
     public function validate(array $rawTestDefinitions): iterable
     {
-        /** @var array<array<string>>|array<array<array<string>>> $testDefinitions */
-        $testDefinitions = array_map(static function ($testDefinition) {
+        /** @var array<array<string>>|array<array<array<string>>> $yamlTestDefinitions */
+        $yamlTestDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
         }, $rawTestDefinitions);
         $parsedTestDefinitions = [];
 
-        foreach ($testDefinitions as $testDefinition) {
-            $this->doValidate($testDefinition);
+        foreach ($yamlTestDefinitions as $yamlTestDefinition) {
+            $this->doValidate($yamlTestDefinition);
 
             $parsedTestDefinition = new DefaultDefinition($this->logger);
 
             /** @var string $id */
-            $id = $testDefinition['id'];
+            $id = $yamlTestDefinition['id'];
             $parsedTestDefinition->setId($id);
 
-            $this->doPopulateSource($testDefinition, $parsedTestDefinition);
+            $this->doPopulateSource($yamlTestDefinition, $parsedTestDefinition);
 
-            $this->doPopulateDestination($testDefinition, $parsedTestDefinition);
+            $this->doPopulateDestination($yamlTestDefinition, $parsedTestDefinition);
 
-            $this->doPopulateTests($testDefinition, $parsedTestDefinition);
+            $this->doPopulateTests($yamlTestDefinition, $parsedTestDefinition);
 
-            $this->doPopulateDescription($testDefinition, $parsedTestDefinition);
+            $this->doPopulateDescription($yamlTestDefinition, $parsedTestDefinition);
 
-            $this->doPopulateGroup($testDefinition, $parsedTestDefinition);
+            $this->doPopulateGroup($yamlTestDefinition, $parsedTestDefinition);
 
             $parsedTestDefinitions[] = $parsedTestDefinition;
         }
@@ -89,15 +89,15 @@ class DefaultLoader implements Load
     }
 
     /**
-     * @param array<string>|array<array<string>> $testDefinition
+     * @param array<string>|array<array<string>> $yamlTestDefinition
      * @param \Mdtt\Definition\Definition $parsedTestDefinition
      *
      * @return void
      */
-    private function doPopulateSource(array $testDefinition, Definition $parsedTestDefinition): void
+    private function doPopulateSource(array $yamlTestDefinition, Definition $parsedTestDefinition): void
     {
         /** @var array<string> $sourceInformation */
-        $sourceInformation = $testDefinition['source'];
+        $sourceInformation = $yamlTestDefinition['source'];
         try {
             $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
             $parsedTestDefinition->setSource($sourceData);
@@ -107,15 +107,15 @@ class DefaultLoader implements Load
     }
 
     /**
-     * @param array<string>|array<array<string>> $testDefinition
+     * @param array<string>|array<array<string>> $yamlTestDefinition
      * @param \Mdtt\Definition\Definition $parsedTestDefinition
      *
      * @return void
      */
-    private function doPopulateDestination(array $testDefinition, Definition $parsedTestDefinition): void
+    private function doPopulateDestination(array $yamlTestDefinition, Definition $parsedTestDefinition): void
     {
         /** @var array<string> $destinationInformation */
-        $destinationInformation = $testDefinition['destination'];
+        $destinationInformation = $yamlTestDefinition['destination'];
         try {
             $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
             $parsedTestDefinition->setDestination($destinationData);
@@ -125,15 +125,15 @@ class DefaultLoader implements Load
     }
 
     /**
-     * @param array<string>|array<array<string>> $testDefinition
+     * @param array<string>|array<array<string>> $yamlTestDefinition
      * @param \Mdtt\Definition\Definition $parsedTestDefinition
      *
      * @return void
      */
-    private function doPopulateTests(array $testDefinition, Definition $parsedTestDefinition): void
+    private function doPopulateTests(array $yamlTestDefinition, Definition $parsedTestDefinition): void
     {
         /** @var array<array<string>> $tests */
-        $tests = $testDefinition['tests'];
+        $tests = $yamlTestDefinition['tests'];
         /** @var array<\Mdtt\Test\Test> $parsedTests */
         $parsedTests = [];
         foreach ($tests as $test) {
@@ -164,30 +164,30 @@ class DefaultLoader implements Load
     }
 
     /**
-     * @param array<string>|array<array<string>> $testDefinition
+     * @param array<string>|array<array<string>> $yamlTestDefinition
      * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
      *
      * @return void
      */
-    private function doPopulateDescription(array $testDefinition, DefaultDefinition $parsedTestDefinition): void
+    private function doPopulateDescription(array $yamlTestDefinition, DefaultDefinition $parsedTestDefinition): void
     {
         /** @var ?string $description */
-        $description = $testDefinition['description'] ?? null;
+        $description = $yamlTestDefinition['description'] ?? null;
         if ($description) {
             $parsedTestDefinition->setDescription($description);
         }
     }
 
     /**
-     * @param array<string>|array<array<string>> $testDefinition
+     * @param array<string>|array<array<string>> $yamlTestDefinition
      * @param \Mdtt\Definition\DefaultDefinition $parsedTestDefinition
      *
      * @return void
      */
-    private function doPopulateGroup(array $testDefinition, DefaultDefinition $parsedTestDefinition): void
+    private function doPopulateGroup(array $yamlTestDefinition, DefaultDefinition $parsedTestDefinition): void
     {
         /** @var ?string $group */
-        $group = $testDefinition['group'] ?? null;
+        $group = $yamlTestDefinition['group'] ?? null;
         if ($group) {
             $parsedTestDefinition->setGroup($group);
         }
