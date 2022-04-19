@@ -45,16 +45,15 @@ class DefaultTest extends Test
         try {
             Assert::assertSame(
                 $sourceValue,
-                $destinationData[$this->getDestinationField()],
-                "Source and destination does not match."
+                $destinationData[$this->getDestinationField()]
             );
 
             $this->getLogger()->notice("Source and destination matches", [
                 "Source" => $sourceValue,
                 "Destination" => $destinationData,
             ]);
-        } catch (ExpectationFailedException $exception) {
-            $this->getLogger()->emergency($exception->getMessage(), [
+        } catch (ExpectationFailedException) {
+            $this->getLogger()->emergency("Source and destination does not match.", [
                 "Source" => $sourceValue,
                 "Destination" => $destinationData,
             ]);
