@@ -95,6 +95,6 @@ class Report
 
     public function isFailure(): bool
     {
-        return ($this->numberOfFailures) === 0 && ($this->sourceRowCount === $this->destinationRowCount);
+        return ($this->numberOfFailures) !== 0 || ($this->sourceRowCount !== $this->destinationRowCount);
     }
 }
