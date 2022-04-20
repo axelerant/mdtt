@@ -78,7 +78,7 @@ abstract class Test
      * @param array<scalar> $sourceData
      * @param array<scalar> $destinationData
      *
-     * @return void
+     * @return bool
      */
-    abstract public function execute(array $sourceData, array $destinationData): void;
+    abstract public function execute(array $sourceData, array $destinationData): bool;
 }

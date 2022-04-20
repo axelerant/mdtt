@@ -61,14 +61,17 @@ class RunCommand extends Command
             /** @var \Mdtt\Definition\Definition[] $definitions */
             $definitions = $this->definitionLoader->validate($rawTestDefinitions);
 
+            $report = new Report();
+            $report->setNumberOfTestDefinitions(count($definitions));
+
             /** @var bool $isSmokeTest */
             $isSmokeTest = $input->getOption('smoke-test');
             foreach ($definitions as $definition) {
-                $isSmokeTest ? $definition->runSmokeTests() : $definition->runTests();
+                $isSmokeTest ? $definition->runSmokeTests($report) : $definition->runTests($report);
             }
         } catch (IOException $exception) {
             $this->logger->error($exception->getMessage());
-            return Command::FAILURE;
+            return Command::INVALID;
         }
 
         /** @var string|null $email */
@@ -81,6 +84,18 @@ class RunCommand extends Command
             }
         }
 
+        $output->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
+        $output->writeln(sprintf("Number of assertions: %d", $report->getNumberOfAssertions()));
+        $output->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
+        $output->writeln(sprintf("Number of rows in source: %d", $report->getSourceRowCount()));
+        $output->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
+
+        if ($report->isFailure()) {
+            $output->writeln("<error>FAILED</error>");
+            return Command::FAILURE;
+        }
+
+        $output->writeln("<info>OK</info>");
         return Command::SUCCESS;
     }
 }

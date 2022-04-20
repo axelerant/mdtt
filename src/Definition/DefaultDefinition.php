@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition;
 
+use Mdtt\Report;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
@@ -56,9 +57,11 @@ class DefaultDefinition extends Definition
     }
 
     /**
+     * @param \Mdtt\Report $report *
+     *
      * @inheritDoc
      */
-    public function runSmokeTests(): void
+    public function runSmokeTests(Report $report): void
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
@@ -89,10 +92,17 @@ class DefaultDefinition extends Definition
     }
 
     /**
+     * @param \Mdtt\Report $report *
+     *
      * @inheritDoc
      */
-    public function runTests(): void
+    public function runTests(Report $report): void
     {
+        $assertionCount = 0;
+        $failureCount = 0;
+        $sourceCount = 0;
+        $destinationCount = 0;
+
         $source = $this->getSource();
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running the tests of definition id: %s", $this->getId()));
@@ -106,17 +116,29 @@ class DefaultDefinition extends Definition
         $combinedIterators->attachIterator($destinationIterator);
 
         foreach ($combinedIterators as [$sourceValue, $destinationValue]) {
+            $sourceCount++;
+            $destinationCount++;
+
             foreach ($this->getTests() as $test) {
-                $test->execute($sourceValue, $destinationValue);
+                $assertionCount++;
+
+                if ($test->execute($sourceValue, $destinationValue)) {
+                    $failureCount++;
+                }
             }
         }
 
-        try {
-            Assert::assertTrue(!$sourceIterator->valid() && !$destinationIterator->valid());
-
-            $this->logger->notice("Source row count matches with destination row count.");
-        } catch (ExpectationFailedException) {
-            $this->logger->emergency("Source row count does not matches with destination row count.");
+        while ($sourceIterator->valid()) {
+            $sourceCount++;
         }
+
+        while ($destinationIterator->valid()) {
+            $destinationCount++;
+        }
+
+        $report->setNumberOfAssertions($assertionCount);
+        $report->setNumberOfFailures($failureCount);
+        $report->setSourceRowCount($sourceCount);
+        $report->setDestinationRowCount($destinationCount);
     }
 }

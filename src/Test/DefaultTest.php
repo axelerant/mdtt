@@ -13,7 +13,7 @@ class DefaultTest extends Test
     /**
      * @inheritDoc
      */
-    public function execute(array $sourceData, array $destinationData): void
+    public function execute(array $sourceData, array $destinationData): bool
     {
         if (!isset($sourceData[$this->getSourceField()])) {
             throw new ExecutionException("Source field could not be found in the source data.");
@@ -62,6 +62,10 @@ class DefaultTest extends Test
                 "Source" => $sourceValue,
                 "Destination" => $destinationValue,
             ]);
+
+            return false;
         }
+
+        return true;
     }
 }
