@@ -47,6 +47,13 @@ class ValidatorTest extends TestCase
                 "selector" => "",
             ],
             "Incorrect data source type is passed.",
+          ],
+          [
+            "source",
+            [
+              "type" => "unknown_type",
+            ],
+            "Unexpected data source type source and data source definition passed.",
           ]
         ];
     }
