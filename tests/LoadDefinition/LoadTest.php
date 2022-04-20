@@ -30,9 +30,9 @@ class LoadTest extends TestCase
         $this->transformationPluginManager = $this->prophesize(PluginManager::class);
 
         $this->defaultLoader = new DefaultLoader(
-          $this->logger->reveal(),
-          $this->validator->reveal(),
-          $this->transformationPluginManager->reveal()
+            $this->logger->reveal(),
+            $this->validator->reveal(),
+            $this->transformationPluginManager->reveal()
         );
 
         parent::setUp();
