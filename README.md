@@ -174,6 +174,12 @@ class Trim implements \Mdtt\Transform\Transform
 ./vendor/bin/mdtt run -vvv
 ```
 
+You can view all available options by doing this:
+
+```shell
+./vendor/bin/mdtt run --help
+```
+
 ### Specify email where notification will be sent when test completes
 
 ```shell

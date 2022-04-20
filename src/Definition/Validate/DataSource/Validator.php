@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Definition\Validate\DataSource;
 
-use Mdtt\DataSource;
+use Mdtt\DataSource\DataSource;
 use Mdtt\Exception\SetupException;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
@@ -23,7 +23,7 @@ class Validator
      * @param string $type
      * @param array<string> $rawDataSourceDefinition
      *
-     * @return \Mdtt\DataSource
+     * @return \Mdtt\DataSource\DataSource
      * @throws \Mdtt\Exception\SetupException
      */
     public function validate(string $type, array $rawDataSourceDefinition): DataSource

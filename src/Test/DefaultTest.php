@@ -23,33 +23,45 @@ class DefaultTest extends Test
             throw new ExecutionException("Destination field could not be found in the destination data.");
         }
 
-        $this->getLogger()->info(sprintf(
-            "Comparing source <info>%s</info> with destination <info>%s</info>",
-            $sourceData[$this->getSourceField()],
-            $destinationData[$this->getDestinationField()]
-        ));
-
         /** @var string|int $sourceValue */
         $sourceValue = $sourceData[$this->getSourceField()];
+        /** @var string|int $destinationValue */
+        $destinationValue = $destinationData[$this->getDestinationField()];
+
+        $this->getLogger()->info("Comparing source with destination.", [
+            'Source' => $sourceValue,
+            'Destination' => $destinationValue,
+        ]);
+
+
         if ($this->getTransform() !== null) {
             $sourceValue = $this->getTransform()->process($sourceValue);
 
-            $this->getLogger()->notice(sprintf(
-                "Applied transform: %s on source. Comparing source %s with destination %s",
-                $this->getTransform()->name(),
-                $sourceValue,
-                $destinationData[$this->getDestinationField()]
-            ));
+            $this->getLogger()->notice(
+                "Applied transform on source. Comparing source with destination.",
+                [
+                    'Source' => $sourceValue,
+                    'Destination' => $destinationValue,
+                    'Transform' => $this->getTransform()->name()
+                ]
+            );
         }
 
         try {
             Assert::assertSame(
                 $sourceValue,
-                $destinationData[$this->getDestinationField()],
-                "Source and destination does not match."
+                $destinationValue,
             );
-        } catch (ExpectationFailedException $exception) {
-            $this->getLogger()->emergency($exception->getMessage());
+
+            $this->getLogger()->notice("Source and destination matches.", [
+                "Source" => $sourceValue,
+                "Destination" => $destinationValue,
+            ]);
+        } catch (ExpectationFailedException) {
+            $this->getLogger()->emergency("Source and destination does not match.", [
+                "Source" => $sourceValue,
+                "Destination" => $destinationValue,
+            ]);
         }
     }
 }
