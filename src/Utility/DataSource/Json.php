@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mdtt\Utility\DataSource;
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\StreamWrapper;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
@@ -34,15 +33,15 @@ class Json
     public function getItems(string $data, string $selector): Items
     {
         $httpClient = $this->httpClient->getClient();
-        $request = new Request('GET', $data);
+        $headers = [];
 
         if (isset($this->authBasicCredential)) {
             $credential = explode(':', $this->authBasicCredential);
-            $request->withHeader('auth', $credential);
+            $headers['auth'] = $credential;
         }
 
         try {
-            $response = $httpClient->sendRequest($request);
+            $response = $httpClient->request('GET', $data, $headers);
         } catch (ClientExceptionInterface $e) {
             throw new ExecutionException($e->getMessage());
         }
