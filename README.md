@@ -46,6 +46,20 @@ return [
             'host' => "127.0.0.1",
             'port' => "59002",
         ],
+    ],
+    'http' => [
+        // JSON datasource basic authentication credetials
+        'source' => [
+            'username' => 'username',
+            'password' => 'fubar',
+            // Basic authentication protocol: basic, digest, or ntlm.
+            // Protocol is optional. If not mentioned, basic is considered.
+            'protocol' => 'ntlm',
+        ],
+        'destination' => [
+            'username' => 'username',
+            'password' => 'puffball',
+        ]
     ]
 ];
 ```
@@ -99,14 +113,14 @@ source:
   data: https://dev.legacy-system.com/api/v1/users
   # The pointer where all the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
   selector: "/results/-/employees"
-  # Basic authentication credentials to access the endpoint. This is optional if the endpoint is publicly accessible.
-  auth_basic: "foo:bar"
+  # Datasource basic authentication credentials. Note that the key is same as mentioned in the test specification. This is optional if the endpoint is publicly accessible.
+  credential: source
 # The endpoint that returns the destination dataset.
 destination:
   type: json
   data: https://dev.new-system.com/api/v1/users
   selector: "/results/-/employees"
-  auth_basic: "foo:bar"
+  credential: destination
 tests:
   -
     sourceField: name
