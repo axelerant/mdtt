@@ -71,8 +71,8 @@ class Validator
                     );
                 }
 
-                $this->jsonDataSourceUtility->setUsername($httpSpecification['username']);
-                $this->jsonDataSourceUtility->setPassword($httpSpecification['password']);
+                $this->jsonDataSourceUtility->setUsername($httpSpecification[$credentialKey]['username']);
+                $this->jsonDataSourceUtility->setPassword($httpSpecification[$credentialKey]['password']);
                 $this->jsonDataSourceUtility->setProtocol($httpSpecification[$credentialKey]['protocol'] ?? 'basic');
             }
 
