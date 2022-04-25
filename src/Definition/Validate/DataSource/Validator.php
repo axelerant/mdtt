@@ -55,8 +55,25 @@ class Validator
         if ($dataSourceType === "json") {
             $this->doValidateJson($rawDataSourceDefinition);
 
-            if (isset($rawDataSourceDefinition['auth_basic'])) {
-                $this->jsonDataSourceUtility->setAuthBasicCredential($rawDataSourceDefinition['auth_basic']);
+            if (isset($rawDataSourceDefinition['credential'])) {
+                $specification = require "tests/mdtt/spec.php";
+
+                $httpSpecification = $specification['http'];
+                /** @var string $credentialKey */
+                $credentialKey = $rawDataSourceDefinition['credential'];
+
+                if (!isset(
+                    $httpSpecification[$credentialKey]['username'],
+                    $httpSpecification[$credentialKey]['password']
+                )) {
+                    throw new SetupException(
+                        "Basic auth username and password are not provided, but credential is specified."
+                    );
+                }
+
+                $this->jsonDataSourceUtility->setUsername($httpSpecification['username']);
+                $this->jsonDataSourceUtility->setPassword($httpSpecification['password']);
+                $this->jsonDataSourceUtility->setProtocol($httpSpecification[$credentialKey]['protocol'] ?? 'basic');
             }
 
             if ($type === "source") {

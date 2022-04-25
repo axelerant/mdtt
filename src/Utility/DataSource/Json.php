@@ -15,19 +15,38 @@ use Psr\Http\Client\ClientExceptionInterface;
 class Json
 {
     private HttpClient $httpClient;
-    private ?string $authBasicCredential;
+
+    private ?string $username;
+    private ?string $password;
+    private ?string $protocol;
+
+    /**
+     * @param string $username
+     */
+    public function setUsername(string $username): void
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @param string $protocol
+     */
+    public function setProtocol(string $protocol): void
+    {
+        $this->protocol = $protocol;
+    }
 
     public function __construct(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
-    }
-
-    /**
-     * @param string $authBasicCredential
-     */
-    public function setAuthBasicCredential(string $authBasicCredential): void
-    {
-        $this->authBasicCredential = $authBasicCredential;
     }
 
     public function getItems(string $data, string $selector): Items
@@ -35,9 +54,8 @@ class Json
         $httpClient = $this->httpClient->getClient();
         $headers = [];
 
-        if (isset($this->authBasicCredential)) {
-            $credential = explode(':', $this->authBasicCredential);
-            $headers['auth'] = $credential;
+        if (isset($this->username, $this->password, $this->protocol)) {
+            $headers['auth'] = [$this->username, $this->password, $this->protocol];
         }
 
         try {

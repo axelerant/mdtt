@@ -26,14 +26,6 @@ class Json extends DataSource
     }
 
     /**
-     * @return string
-     */
-    public function getSelector(): string
-    {
-        return $this->selector;
-    }
-
-    /**
      * @inheritDoc
      */
     public function getIterator(): Iterator
