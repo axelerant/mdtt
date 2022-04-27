@@ -63,6 +63,9 @@ class DefaultDefinition extends Definition
      */
     public function runSmokeTests(Report $report): void
     {
+        $assertionCount = 0;
+        $failureCount = 0;
+
         $source = $this->getSource();
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->getId()));
@@ -74,6 +77,8 @@ class DefaultDefinition extends Definition
         $destinationRowCounts = iterator_count($destinationIterator);
 
         try {
+            $assertionCount++;
+
             Assert::assertSame(
                 $sourceRowCounts,
                 $destinationRowCounts
@@ -84,11 +89,18 @@ class DefaultDefinition extends Definition
               'Destination row count' => $destinationRowCounts,
             ]);
         } catch (ExpectationFailedException) {
+            $failureCount++;
+
             $this->logger->emergency("Source row count does not matches with destination row count.", [
               'Source row count' => $sourceRowCounts,
               'Destination row count' => $destinationRowCounts,
             ]);
         }
+
+        $report->setNumberOfAssertions($assertionCount);
+        $report->setNumberOfFailures($failureCount);
+        $report->setSourceRowCount($sourceRowCounts);
+        $report->setDestinationRowCount($destinationRowCounts);
     }
 
     /**
