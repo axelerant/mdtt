@@ -130,10 +130,12 @@ class DefaultDefinition extends Definition
 
         while ($sourceIterator->valid()) {
             $sourceCount++;
+            $sourceIterator->next();
         }
 
         while ($destinationIterator->valid()) {
             $destinationCount++;
+            $destinationIterator->next();
         }
 
         $report->setNumberOfAssertions($assertionCount);
