@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Mdtt\Destination;
+namespace Mdtt\DataSource;
 
 use Iterator;
-use Mdtt\DataSource\DataSource;
 use Mdtt\Exception\SetupException;
 use Mdtt\Utility\DataSource\Database as DbDatabase;
 use mysqli_result;

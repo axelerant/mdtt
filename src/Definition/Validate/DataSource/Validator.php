@@ -37,19 +37,10 @@ class Validator
         if ($dataSourceType === "database") {
             $this->doValidateDatabase($rawDataSourceDefinition);
 
-            if ($type === "source") {
-                return new \Mdtt\Source\Database(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['database']
-                );
-            }
-
-            if ($type === "destination") {
-                return new \Mdtt\Destination\Database(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['database']
-                );
-            }
+            return new \Mdtt\DataSource\Database(
+                $rawDataSourceDefinition['data'],
+                $rawDataSourceDefinition['database']
+            );
         }
 
         if ($dataSourceType === "json") {
@@ -79,31 +70,16 @@ class Validator
                 $protocol = $httpSpecification[$credentialKey]['protocol'] ?? null;
             }
 
-            if ($type === "source") {
-                $datasource = new \Mdtt\Source\Json(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['selector'],
-                    $this->jsonDataSourceUtility,
-                );
-                $datasource->setUsername($username);
-                $datasource->setPassword($password);
-                $datasource->setProtocol($protocol);
+            $datasource = new \Mdtt\DataSource\Json(
+                $rawDataSourceDefinition['data'],
+                $rawDataSourceDefinition['selector'],
+                $this->jsonDataSourceUtility,
+            );
+            $datasource->setUsername($username);
+            $datasource->setPassword($password);
+            $datasource->setProtocol($protocol);
 
-                return $datasource;
-            }
-
-            if ($type === "destination") {
-                $datasource = new \Mdtt\Destination\Json(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['selector'],
-                    $this->jsonDataSourceUtility
-                );
-                $datasource->setUsername($username);
-                $datasource->setPassword($password);
-                $datasource->setProtocol($protocol);
-
-                return $datasource;
-            }
+            return $datasource;
         }
 
         throw new SetupException(sprintf("Unexpected data source type %s and data source definition passed.", $type));

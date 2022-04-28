@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Mdtt\Destination;
+namespace Mdtt\DataSource;
 
 use Iterator;
 use JsonMachine\Items;
-use Mdtt\DataSource\DataSource;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
 class Json extends DataSource
@@ -50,14 +49,6 @@ class Json extends DataSource
         parent::__construct($data);
         $this->selector = $selector;
         $this->jsonDataSourceUtility = $jsonDataSourceUtility;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSelector(): string
-    {
-        return $this->selector;
     }
 
     /**
