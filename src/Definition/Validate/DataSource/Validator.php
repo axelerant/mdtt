@@ -54,6 +54,9 @@ class Validator
 
         if ($dataSourceType === "json") {
             $this->doValidateJson($rawDataSourceDefinition);
+            $username = null;
+            $password = null;
+            $protocol = null;
 
             if (isset($rawDataSourceDefinition['credential'])) {
                 $specification = require "tests/mdtt/spec.php";
@@ -71,25 +74,35 @@ class Validator
                     );
                 }
 
-                $this->jsonDataSourceUtility->setUsername($httpSpecification[$credentialKey]['username']);
-                $this->jsonDataSourceUtility->setPassword($httpSpecification[$credentialKey]['password']);
-                $this->jsonDataSourceUtility->setProtocol($httpSpecification[$credentialKey]['protocol'] ?? 'basic');
+                $username = $httpSpecification[$credentialKey]['username'];
+                $password = $httpSpecification[$credentialKey]['password'];
+                $protocol = $httpSpecification[$credentialKey]['protocol'] ?? null;
             }
 
             if ($type === "source") {
-                return new \Mdtt\Source\Json(
+                $datasource = new \Mdtt\Source\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
                     $this->jsonDataSourceUtility,
                 );
+                $datasource->setUsername($username);
+                $datasource->setPassword($password);
+                $datasource->setProtocol($protocol);
+
+                return $datasource;
             }
 
             if ($type === "destination") {
-                return new \Mdtt\Destination\Json(
+                $datasource = new \Mdtt\Destination\Json(
                     $rawDataSourceDefinition['data'],
                     $rawDataSourceDefinition['selector'],
                     $this->jsonDataSourceUtility
                 );
+                $datasource->setUsername($username);
+                $datasource->setPassword($password);
+                $datasource->setProtocol($protocol);
+
+                return $datasource;
             }
         }
 

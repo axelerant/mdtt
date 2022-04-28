@@ -16,46 +16,23 @@ class Json
 {
     private HttpClient $httpClient;
 
-    private ?string $username;
-    private ?string $password;
-    private ?string $protocol;
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(string $username): void
-    {
-        $this->username = $username;
-    }
-
-    /**
-     * @param string $password
-     */
-    public function setPassword(string $password): void
-    {
-        $this->password = $password;
-    }
-
-    /**
-     * @param string $protocol
-     */
-    public function setProtocol(string $protocol): void
-    {
-        $this->protocol = $protocol;
-    }
-
     public function __construct(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
     }
 
-    public function getItems(string $data, string $selector): Items
-    {
+    public function getItems(
+        string $data,
+        string $selector,
+        ?string $username,
+        ?string $password,
+        ?string $protocol
+    ): Items {
         $httpClient = $this->httpClient->getClient();
         $headers = [];
 
-        if (isset($this->username, $this->password, $this->protocol)) {
-            $headers['auth'] = [$this->username, $this->password, $this->protocol];
+        if (isset($username, $password)) {
+            $headers['auth'] = [$username, $password, $protocol ?? 'basic'];
         }
 
         try {
