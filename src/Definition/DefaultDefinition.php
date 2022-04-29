@@ -68,7 +68,6 @@ class DefaultDefinition extends Definition
 
         $source = $this->getSource();
         $destination = $this->getDestination();
-        $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->getId()));
 
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();
@@ -117,7 +116,6 @@ class DefaultDefinition extends Definition
 
         $source = $this->getSource();
         $destination = $this->getDestination();
-        $this->logger->info(sprintf("Running the tests of definition id: %s", $this->getId()));
 
         $sourceIterator = $source->getIterator();
         $destinationIterator = $destination->getIterator();

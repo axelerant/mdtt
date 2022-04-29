@@ -65,6 +65,14 @@ class RunCommand extends Command
             /** @var bool $isSmokeTest */
             $isSmokeTest = $input->getOption('smoke-test');
             foreach ($definitions as $definition) {
+                $output->writeln(
+                    sprintf(
+                        "Running the tests of definition id: %s",
+                        $definition->getId()
+                    ),
+                    OutputInterface::VERBOSITY_VERY_VERBOSE
+                );
+
                 $isSmokeTest ? $definition->runSmokeTests($report) : $definition->runTests($report);
             }
         } catch (IOException $exception) {
