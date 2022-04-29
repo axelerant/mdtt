@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mdtt\Utility;
 
 use GuzzleHttp\Client;
-use Psr\Http\Client\ClientInterface;
+use GuzzleHttp\ClientInterface;
 
 class HttpClient
 {
