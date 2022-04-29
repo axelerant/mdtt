@@ -8,6 +8,7 @@ use Mdtt\Report;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class DefaultDefinition extends Definition
 {
@@ -15,13 +16,12 @@ class DefaultDefinition extends Definition
     private string $group;
 
     private LoggerInterface $logger;
+    private OutputInterface $output;
 
-    /**
-     * @param \Psr\Log\LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, OutputInterface $output)
     {
         $this->logger = $logger;
+        $this->output = $output;
     }
 
     /**
@@ -83,17 +83,11 @@ class DefaultDefinition extends Definition
                 $destinationRowCounts
             );
 
-            $this->logger->notice("Source row count matches with destination row count.", [
-              'Source row count' => $sourceRowCounts,
-              'Destination row count' => $destinationRowCounts,
-            ]);
+            $this->output->write('<info>P</info>');
         } catch (ExpectationFailedException) {
             $failureCount++;
 
-            $this->logger->emergency("Source row count does not matches with destination row count.", [
-              'Source row count' => $sourceRowCounts,
-              'Destination row count' => $destinationRowCounts,
-            ]);
+            $this->output->write('<error>F</error>');
         }
 
         $report->setNumberOfAssertions($assertionCount);
@@ -134,6 +128,9 @@ class DefaultDefinition extends Definition
 
                 if (!$test->execute($sourceValue, $destinationValue)) {
                     $failureCount++;
+                    $this->output->write('<error>F</error>');
+                } else {
+                    $this->output->write('<info>P</info>');
                 }
             }
         }

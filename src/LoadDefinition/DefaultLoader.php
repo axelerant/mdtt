@@ -60,7 +60,6 @@ class DefaultLoader implements Load
      */
     public function validate(array $rawTestDefinitions): iterable
     {
-        $this->output->writeln("help", OutputInterface::OUTPUT_NORMAL);
         /** @var array<array<string>>|array<array<array<string>>> $yamlTestDefinitions */
         $yamlTestDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
@@ -70,7 +69,7 @@ class DefaultLoader implements Load
         foreach ($yamlTestDefinitions as $yamlTestDefinition) {
             $this->doValidate($yamlTestDefinition);
 
-            $parsedTestDefinition = new DefaultDefinition($this->logger);
+            $parsedTestDefinition = new DefaultDefinition($this->logger, $this->output);
 
             /** @var string $id */
             $id = $yamlTestDefinition['id'];
