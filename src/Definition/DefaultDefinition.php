@@ -70,51 +70,5 @@ class DefaultDefinition extends Definition
      */
     public function runTests(Report $report): void
     {
-        $assertionCount = 0;
-        $failureCount = 0;
-        $sourceCount = 0;
-        $destinationCount = 0;
-
-        $source = $this->getSource();
-        $destination = $this->getDestination();
-
-        $sourceIterator = $source->getIterator();
-        $destinationIterator = $destination->getIterator();
-
-        // Combining the iterators is required so that the tests can be run for every returned item.
-        $combinedIterators = new \MultipleIterator();
-        $combinedIterators->attachIterator($sourceIterator);
-        $combinedIterators->attachIterator($destinationIterator);
-
-        foreach ($combinedIterators as [$sourceValue, $destinationValue]) {
-            $sourceCount++;
-            $destinationCount++;
-
-            foreach ($this->getTests() as $test) {
-                $assertionCount++;
-
-                if (!$test->execute($sourceValue, $destinationValue)) {
-                    $failureCount++;
-                    $this->output->write('<error>F</error>');
-                } else {
-                    $this->output->write('<info>P</info>');
-                }
-            }
-        }
-
-        while ($sourceIterator->valid()) {
-            $sourceCount++;
-            $sourceIterator->next();
-        }
-
-        while ($destinationIterator->valid()) {
-            $destinationCount++;
-            $destinationIterator->next();
-        }
-
-        $report->setNumberOfAssertions($assertionCount);
-        $report->setNumberOfFailures($failureCount);
-        $report->setSourceRowCount($sourceCount);
-        $report->setDestinationRowCount($destinationCount);
     }
 }

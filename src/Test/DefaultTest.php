@@ -6,7 +6,6 @@ namespace Mdtt\Test;
 
 use Mdtt\Exception\ExecutionException;
 use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\ExpectationFailedException;
 
 class DefaultTest extends Test
 {
@@ -28,43 +27,14 @@ class DefaultTest extends Test
         /** @var string|int $destinationValue */
         $destinationValue = $destinationData[$this->getDestinationField()];
 
-        $this->getLogger()->info("Comparing source with destination.", [
-            'Source' => $sourceValue,
-            'Destination' => $destinationValue,
-        ]);
-
-
         if ($this->getTransform() !== null) {
             $sourceValue = $this->getTransform()->process($sourceValue);
-
-            $this->getLogger()->notice(
-                "Applied transform on source. Comparing source with destination.",
-                [
-                    'Source' => $sourceValue,
-                    'Destination' => $destinationValue,
-                    'Transform' => $this->getTransform()->name()
-                ]
-            );
         }
 
-        try {
-            Assert::assertSame(
-                $sourceValue,
-                $destinationValue,
-            );
-
-            $this->getLogger()->notice("Source and destination matches.", [
-                "Source" => $sourceValue,
-                "Destination" => $destinationValue,
-            ]);
-        } catch (ExpectationFailedException) {
-            $this->getLogger()->emergency("Source and destination does not match.", [
-                "Source" => $sourceValue,
-                "Destination" => $destinationValue,
-            ]);
-
-            return false;
-        }
+        Assert::assertSame(
+            $sourceValue,
+            $destinationValue,
+        );
 
         return true;
     }
