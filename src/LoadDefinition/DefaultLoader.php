@@ -12,6 +12,7 @@ use Mdtt\Test\DefaultTest;
 use Mdtt\Transform\PluginManager;
 use Mdtt\Transform\Transform;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Yaml\Yaml;
 
@@ -24,12 +25,14 @@ class DefaultLoader implements Load
      * @var array<string, Transform>
      */
     private array $transformPlugins;
+    private OutputInterface $output;
 
-    public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager)
+    public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager, OutputInterface $output)
     {
         $this->logger = $logger;
         $this->dataSourceValidator = $validator;
         $this->transformPluginManager = $transformPluginManager;
+        $this->output = $output;
     }
 
     /**
@@ -57,6 +60,7 @@ class DefaultLoader implements Load
      */
     public function validate(array $rawTestDefinitions): iterable
     {
+        $this->output->writeln("help", OutputInterface::OUTPUT_NORMAL);
         /** @var array<array<string>>|array<array<array<string>>> $yamlTestDefinitions */
         $yamlTestDefinitions = array_map(static function ($testDefinition) {
             return Yaml::parseFile($testDefinition);
