@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Mdtt\Definition;
 
 use Mdtt\Report;
-use PHPUnit\Framework\Assert;
-use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -63,37 +61,6 @@ class DefaultDefinition extends Definition
      */
     public function runSmokeTests(Report $report): void
     {
-        $assertionCount = 0;
-        $failureCount = 0;
-
-        $source = $this->getSource();
-        $destination = $this->getDestination();
-
-        $sourceIterator = $source->getIterator();
-        $destinationIterator = $destination->getIterator();
-
-        $sourceRowCounts = iterator_count($sourceIterator);
-        $destinationRowCounts = iterator_count($destinationIterator);
-
-        try {
-            $assertionCount++;
-
-            Assert::assertSame(
-                $sourceRowCounts,
-                $destinationRowCounts
-            );
-
-            $this->output->write('<info>P</info>');
-        } catch (ExpectationFailedException) {
-            $failureCount++;
-
-            $this->output->write('<error>F</error>');
-        }
-
-        $report->setNumberOfAssertions($assertionCount);
-        $report->setNumberOfFailures($failureCount);
-        $report->setSourceRowCount($sourceRowCounts);
-        $report->setDestinationRowCount($destinationRowCounts);
     }
 
     /**

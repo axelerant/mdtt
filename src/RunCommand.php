@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace Mdtt;
 
+use Mdtt\Definition\Definition;
 use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\ExpectationFailedException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 
@@ -48,8 +53,15 @@ class RunCommand extends Command
         InputInterface $input,
         OutputInterface $output
     ): int {
+        if (!$output instanceof ConsoleOutputInterface) {
+            throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
+        }
+
+        $progress = $output->section();
+        $testSummary = $output->section();
+
         try {
-            $output->writeln("Loading test definitions", OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $progress->writeln("Loading test definitions", OutputInterface::VERBOSITY_VERY_VERBOSE);
 
             /** @var array<string> $rawTestDefinitions */
             $rawTestDefinitions = $this->definitionLoader->scan([
@@ -65,7 +77,7 @@ class RunCommand extends Command
             /** @var bool $isSmokeTest */
             $isSmokeTest = $input->getOption('smoke-test');
             foreach ($definitions as $definition) {
-                $output->writeln(
+                $progress->writeln(
                     sprintf(
                         "Running the tests of definition id: %s",
                         $definition->getId()
@@ -73,35 +85,72 @@ class RunCommand extends Command
                     OutputInterface::VERBOSITY_VERY_VERBOSE
                 );
 
-                $isSmokeTest ? $definition->runSmokeTests($report) : $definition->runTests($report);
+                $isSmokeTest ? $this->runSmokeTest($definition, $report, $progress) : $definition->runTests($report);
             }
         } catch (IOException $exception) {
-            $output->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+            $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             return Command::INVALID;
         }
 
+        // TODO: move this into a private method.
         /** @var string|null $email */
         $email = $input->getOption('email');
         if ($email !== null) {
             try {
                 $this->email->sendMessage("Test completed", "Test completed", $email);
             } catch (SetupException $exception) {
-                $output->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+                $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             }
         }
 
-        $output->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
-        $output->writeln(sprintf("Number of assertions: %d", $report->getNumberOfAssertions()));
-        $output->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
-        $output->writeln(sprintf("Number of rows in source: %d", $report->getSourceRowCount()));
-        $output->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
+        // todo: move this inside private method.
+        $testSummary->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
+        $testSummary->writeln(sprintf("Number of assertions: %d", $report->getNumberOfAssertions()));
+        $testSummary->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
+        $testSummary->writeln(sprintf("Number of rows in source: %d", $report->getSourceRowCount()));
+        $testSummary->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
 
         if ($report->isFailure()) {
-            $output->writeln("<error>FAILED</error>");
+            $testSummary->writeln("<error>FAILED</error>");
             return Command::FAILURE;
         }
 
-        $output->writeln("<info>OK</info>");
+        $testSummary->writeln("<info>OK</info>");
         return Command::SUCCESS;
+    }
+
+    private function runSmokeTest(Definition $definition, Report $report, ConsoleSectionOutput $progress): void
+    {
+        $assertionCount = 0;
+        $failureCount = 0;
+
+        $source = $definition->getSource();
+        $destination = $definition->getDestination();
+
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
+        $sourceRowCounts = iterator_count($sourceIterator);
+        $destinationRowCounts = iterator_count($destinationIterator);
+
+        try {
+            $assertionCount++;
+
+            Assert::assertSame(
+                $sourceRowCounts,
+                $destinationRowCounts
+            );
+
+            $progress->write('<info>P</info>');
+        } catch (ExpectationFailedException) {
+            $failureCount++;
+
+            $progress->write('<error>F</error>');
+        }
+
+        $report->setNumberOfAssertions($assertionCount);
+        $report->setNumberOfFailures($failureCount);
+        $report->setSourceRowCount($sourceRowCounts);
+        $report->setDestinationRowCount($destinationRowCounts);
     }
 }
