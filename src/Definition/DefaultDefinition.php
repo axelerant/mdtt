@@ -132,7 +132,7 @@ class DefaultDefinition extends Definition
             foreach ($this->getTests() as $test) {
                 $assertionCount++;
 
-                if ($test->execute($sourceValue, $destinationValue)) {
+                if (!$test->execute($sourceValue, $destinationValue)) {
                     $failureCount++;
                 }
             }
