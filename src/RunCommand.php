@@ -7,7 +7,6 @@ namespace Mdtt;
 use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,14 +16,13 @@ use Symfony\Component\Filesystem\Exception\IOException;
 class RunCommand extends Command
 {
     private Email $email;
-    private LoggerInterface $logger;
+
     private Load $definitionLoader;
 
-    public function __construct(Email $email, LoggerInterface $logger, Load $loader, string $name = null)
+    public function __construct(Email $email, Load $loader, string $name = null)
     {
         parent::__construct($name);
         $this->email = $email;
-        $this->logger = $logger;
         $this->definitionLoader = $loader;
     }
 
@@ -51,7 +49,7 @@ class RunCommand extends Command
         OutputInterface $output
     ): int {
         try {
-            $this->logger->info("Loading test definitions");
+            $output->writeln("Loading test definitions", OutputInterface::VERBOSITY_VERY_VERBOSE);
 
             /** @var array<string> $rawTestDefinitions */
             $rawTestDefinitions = $this->definitionLoader->scan([
@@ -70,7 +68,7 @@ class RunCommand extends Command
                 $isSmokeTest ? $definition->runSmokeTests($report) : $definition->runTests($report);
             }
         } catch (IOException $exception) {
-            $this->logger->error($exception->getMessage());
+            $output->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             return Command::INVALID;
         }
 
@@ -80,7 +78,7 @@ class RunCommand extends Command
             try {
                 $this->email->sendMessage("Test completed", "Test completed", $email);
             } catch (SetupException $exception) {
-                $this->logger->error($exception->getMessage());
+                $output->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             }
         }
 
