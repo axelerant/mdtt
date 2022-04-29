@@ -102,7 +102,7 @@ class DefaultLoader implements Load
             $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
             $parsedTestDefinition->setSource($sourceData);
         } catch (SetupException $exception) {
-            $this->logger->alert($exception->getMessage());
+            throw new SetupException($exception->getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ class DefaultLoader implements Load
             $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
             $parsedTestDefinition->setDestination($destinationData);
         } catch (SetupException $exception) {
-            $this->logger->alert($exception->getMessage());
+            throw new SetupException($exception->getMessage());
         }
     }
 
