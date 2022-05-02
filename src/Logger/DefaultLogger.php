@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mdtt\Logger;
 
-use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
@@ -16,7 +15,7 @@ class DefaultLogger implements LoggerInterface
     public function __construct(Logger $logger)
     {
         $this->logger = $logger;
-        $this->logger->pushHandler(new StreamHandler(__DIR__ . '/logs/'. time() . '.log'));
+//        $this->logger->pushHandler(new StreamHandler(__DIR__ . '/logs/'. time() . '.log'));
     }
 
     /**
