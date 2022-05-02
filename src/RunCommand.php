@@ -62,6 +62,7 @@ class RunCommand extends Command
 
         $progress = $output->section();
         $testSummary = $output->section();
+        $report = new Report();
 
         try {
             $progress->writeln("Loading test definitions", OutputInterface::VERBOSITY_DEBUG);
@@ -74,28 +75,15 @@ class RunCommand extends Command
             /** @var \Mdtt\Definition\Definition[] $definitions */
             $definitions = $this->definitionLoader->validate($rawTestDefinitions);
 
-            $report = new Report();
             $report->setNumberOfTestDefinitions(count($definitions));
-
-            /** @var bool $isSmokeTest */
-            $isSmokeTest = $input->getOption('smoke-test');
-            foreach ($definitions as $definition) {
-                $progress->writeln(
-                    sprintf(
-                        "Running the tests of definition id: %s",
-                        $definition->getId()
-                    ),
-                    OutputInterface::VERBOSITY_VERBOSE
-                );
-
-                $isSmokeTest ?
-                  $this->runSmokeTests($definition, $report, $progress) :
-                  $this->runTests($definition, $report, $progress);
-            }
         } catch (IOException $exception) {
             $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             return Command::INVALID;
         }
+
+        /** @var bool $isSmokeTest */
+        $isSmokeTest = $input->getOption('smoke-test');
+        $this->doRunTests($definitions, $isSmokeTest, $report, $progress);
 
         $this->notifyTestCompletion($input, $progress);
 
@@ -108,6 +96,35 @@ class RunCommand extends Command
 
         $testSummary->writeln("<info>OK</info>");
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param \Mdtt\Definition\Definition[] $definitions
+     * @param bool $isSmokeTest
+     * @param \Mdtt\Report $report
+     * @param \Symfony\Component\Console\Output\ConsoleSectionOutput $progress
+     *
+     * @return void
+     */
+    private function doRunTests(
+        array $definitions,
+        bool $isSmokeTest,
+        Report $report,
+        ConsoleSectionOutput $progress
+    ): void {
+        foreach ($definitions as $definition) {
+            $progress->writeln(
+                sprintf(
+                    "Running the tests of definition id: %s",
+                    $definition->getId()
+                ),
+                OutputInterface::VERBOSITY_VERBOSE
+            );
+
+            $isSmokeTest ?
+              $this->runSmokeTests($definition, $report, $progress) :
+              $this->runTests($definition, $report, $progress);
+        }
     }
 
     private function notifyTestCompletion(InputInterface $input, ConsoleSectionOutput $progress): void
