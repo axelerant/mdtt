@@ -3,7 +3,6 @@
 namespace Mdtt\Definition;
 
 use Mdtt\DataSource\DataSource;
-use Mdtt\Report;
 use Mdtt\Test\Test;
 
 abstract class Definition
@@ -16,15 +15,6 @@ abstract class Definition
     private string $id;
 
     private DataSource $source;
-
-    /**
-     * Runs the tests.
-     *
-     * @param \Mdtt\Report $report *
-     *
-     * @return void
-     */
-    abstract public function runTests(Report $report): void;
 
     /**
      * @return \Mdtt\Test\Test[]
@@ -89,13 +79,4 @@ abstract class Definition
     {
         return $this->destination;
     }
-
-    /**
-     * Runs smoke tests.
-     *
-     * @param \Mdtt\Report $report *
-     *
-     * @return void
-     */
-    abstract public function runSmokeTests(Report $report): void;
 }

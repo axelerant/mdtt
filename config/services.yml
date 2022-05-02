@@ -12,11 +12,6 @@ services:
       # Log channel name.
       - 'mdtt'
 
-  console_output:
-    class: \Symfony\Component\Console\Output\ConsoleOutput
-
-  Symfony\Component\Console\Output\OutputInterface: '@console_output'
-
   # Custom services.
   logger:
     class: \Mdtt\Logger\DefaultLogger
