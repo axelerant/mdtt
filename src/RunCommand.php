@@ -182,7 +182,7 @@ class RunCommand extends Command
             $destinationCount++;
 
             $progress->writeln(
-                sprintf("Comparing datasets, source: %s, destination: %s", $sourceValue, $destinationValue),
+                sprintf("Comparing datasets, source: %s, destination: %s", print_r($sourceValue, true), print_r($destinationValue, true)),
                 OutputInterface::VERBOSITY_VERY_VERBOSE
             );
 
