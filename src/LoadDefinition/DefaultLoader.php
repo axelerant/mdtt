@@ -27,8 +27,12 @@ class DefaultLoader implements Load
     private array $transformPlugins;
     private OutputInterface $output;
 
-    public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager, OutputInterface $output)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        Validator $validator,
+        PluginManager $transformPluginManager,
+        OutputInterface $output
+    ) {
         $this->logger = $logger;
         $this->dataSourceValidator = $validator;
         $this->transformPluginManager = $transformPluginManager;

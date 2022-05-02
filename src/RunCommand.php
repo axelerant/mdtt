@@ -64,7 +64,7 @@ class RunCommand extends Command
         $testSummary = $output->section();
 
         try {
-            $progress->writeln("Loading test definitions", OutputInterface::VERBOSITY_VERY_VERBOSE);
+            $progress->writeln("Loading test definitions", OutputInterface::VERBOSITY_DEBUG);
 
             /** @var array<string> $rawTestDefinitions */
             $rawTestDefinitions = $this->definitionLoader->scan([
@@ -182,7 +182,11 @@ class RunCommand extends Command
             $destinationCount++;
 
             $progress->writeln(
-                sprintf("Comparing datasets, source: %s, destination: %s", print_r($sourceValue, true), print_r($destinationValue, true)),
+                sprintf(
+                    "Comparing datasets, source: %s, destination: %s",
+                    print_r($sourceValue, true),
+                    print_r($destinationValue, true)
+                ),
                 OutputInterface::VERBOSITY_DEBUG
             );
 
