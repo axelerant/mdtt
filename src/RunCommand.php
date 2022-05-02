@@ -85,7 +85,7 @@ class RunCommand extends Command
                         "Running the tests of definition id: %s",
                         $definition->getId()
                     ),
-                    OutputInterface::VERBOSITY_VERY_VERBOSE
+                    OutputInterface::VERBOSITY_VERBOSE
                 );
 
                 $isSmokeTest ?
@@ -183,14 +183,14 @@ class RunCommand extends Command
 
             $progress->writeln(
                 sprintf("Comparing datasets, source: %s, destination: %s", print_r($sourceValue, true), print_r($destinationValue, true)),
-                OutputInterface::VERBOSITY_VERY_VERBOSE
+                OutputInterface::VERBOSITY_DEBUG
             );
 
             foreach ($definition->getTests() as $test) {
                 if ($test->getTransform()) {
                     $progress->writeln(
                         sprintf("Applying transform: %s on source", $test->getTransform()->name()),
-                        OutputInterface::VERBOSITY_VERY_VERBOSE
+                        OutputInterface::VERBOSITY_DEBUG
                     );
                 }
 
