@@ -16,7 +16,7 @@ class DefaultLogger implements LoggerInterface
     public function __construct(Logger $logger)
     {
         $this->logger = $logger;
-        $this->logger->pushHandler(new StreamHandler(__DIR__ . '/logs/test.log', Logger::DEBUG));
+        $this->logger->pushHandler(new StreamHandler(__DIR__ . '/logs/test.log', Logger::EMERGENCY));
     }
 
     /**

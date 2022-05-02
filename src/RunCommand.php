@@ -231,9 +231,9 @@ class RunCommand extends Command
                     $failureCount++;
                     $progress->write('<error>F</error>');
 
-                    $this->logger->emergency("Source and destination does not match.", [
-                      "Source" => $sourceValue[$test->getSourceField()],
-                      "Destination" => $destinationValue[$test->getDestinationField()],
+                    $this->logger->emergency('Source and destination does not match.', [
+                      'Source' => $sourceValue[$test->getSourceField()],
+                      'Destination' => $destinationValue[$test->getDestinationField()],
                     ]);
                 }
             }
