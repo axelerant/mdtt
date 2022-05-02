@@ -97,7 +97,21 @@ class RunCommand extends Command
             return Command::INVALID;
         }
 
-        // TODO: move this into a private method.
+        $this->notifyTestCompletion($input, $progress);
+
+        $this->writeTestSummary($report, $testSummary);
+
+        if ($report->isFailure()) {
+            $testSummary->writeln("<error>FAILED</error>");
+            return Command::FAILURE;
+        }
+
+        $testSummary->writeln("<info>OK</info>");
+        return Command::SUCCESS;
+    }
+
+    private function notifyTestCompletion(InputInterface $input, ConsoleSectionOutput $progress): void
+    {
         /** @var string|null $email */
         $email = $input->getOption('email');
         if ($email !== null) {
@@ -107,21 +121,15 @@ class RunCommand extends Command
                 $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             }
         }
+    }
 
-        // todo: move this inside private method.
+    private function writeTestSummary(Report $report, ConsoleSectionOutput $testSummary): void
+    {
         $testSummary->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
         $testSummary->writeln(sprintf("Number of assertions: %d", $report->getNumberOfAssertions()));
         $testSummary->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
         $testSummary->writeln(sprintf("Number of rows in source: %d", $report->getSourceRowCount()));
         $testSummary->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
-
-        if ($report->isFailure()) {
-            $testSummary->writeln("<error>FAILED</error>");
-            return Command::FAILURE;
-        }
-
-        $testSummary->writeln("<info>OK</info>");
-        return Command::SUCCESS;
     }
 
     private function runSmokeTests(Definition $definition, Report $report, ConsoleSectionOutput $progress): void
