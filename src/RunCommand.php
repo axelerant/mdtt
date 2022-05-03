@@ -6,6 +6,7 @@ namespace Mdtt;
 
 use Mdtt\Definition\Definition;
 use Mdtt\Exception\ExecutionException;
+use Mdtt\Exception\FailFastException;
 use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
@@ -92,9 +93,19 @@ class RunCommand extends Command
         $isSmokeTest = $input->getOption('smoke-test');
         /** @var bool $isFailFast */
         $isFailFast = $input->getOption('fail-fast');
-        $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
 
-        $this->notifyTestCompletion($input, $progress);
+        try {
+            $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
+        } catch (\Exception $exception) {
+            $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+            return Command::INVALID;
+        }
+
+        try {
+            $this->notifyTestCompletion($input, $progress);
+        } catch (\Exception $exception) {
+            $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+        }
 
         $this->writeTestSummary($report, $testSummary);
 
@@ -138,6 +149,8 @@ class RunCommand extends Command
                   $this->runTests($definition, $report, $progress, $isFailFast);
             } catch (ExecutionException) {
                 break;
+            } catch (\Exception $exception) {
+                throw new ExecutionException($exception->getMessage());
             }
         }
     }
@@ -151,6 +164,8 @@ class RunCommand extends Command
                 $this->email->sendMessage("Test completed", "Test completed", $email);
             } catch (SetupException $exception) {
                 $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+            } catch (\Exception $exception) {
+                throw new ExecutionException($exception->getMessage());
             }
         }
     }
@@ -199,6 +214,8 @@ class RunCommand extends Command
             if ($isFailFast) {
                 throw new ExecutionException();
             }
+        } catch (\Exception $exception) {
+            throw new ExecutionException($exception->getMessage());
         } finally {
             $report->setNumberOfAssertions($assertionCount);
             $report->setNumberOfFailures($failureCount);
@@ -264,8 +281,10 @@ class RunCommand extends Command
                     ]);
 
                     if ($isFailFast) {
-                        throw new ExecutionException();
+                        throw new FailFastException();
                     }
+                } catch (\Exception $exception) {
+                    throw new ExecutionException($exception->getMessage());
                 } finally {
                     $report->setNumberOfAssertions($assertionCount);
                     $report->setNumberOfFailures($failureCount);
