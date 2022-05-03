@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Mdtt;
 
 use Mdtt\Definition\Definition;
+use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
@@ -49,6 +50,12 @@ class RunCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Specifies whether it should perform a smoke test, instead of a detailed row by row comparison.'
+            )
+            ->addOption(
+                'fail-fast',
+                null,
+                InputOption::VALUE_NONE,
+                'Specified whether the test should return early in case of a failure.'
             );
     }
 
@@ -83,7 +90,9 @@ class RunCommand extends Command
 
         /** @var bool $isSmokeTest */
         $isSmokeTest = $input->getOption('smoke-test');
-        $this->doRunTests($definitions, $isSmokeTest, $report, $progress);
+        /** @var bool $isFailFast */
+        $isFailFast = $input->getOption('fail-fast');
+        $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
 
         $this->notifyTestCompletion($input, $progress);
 
@@ -101,6 +110,7 @@ class RunCommand extends Command
     /**
      * @param \Mdtt\Definition\Definition[] $definitions
      * @param bool $isSmokeTest
+     * @param bool $isFailFast
      * @param \Mdtt\Report $report
      * @param \Symfony\Component\Console\Output\ConsoleSectionOutput $progress
      *
@@ -109,6 +119,7 @@ class RunCommand extends Command
     private function doRunTests(
         array $definitions,
         bool $isSmokeTest,
+        bool $isFailFast,
         Report $report,
         ConsoleSectionOutput $progress
     ): void {
@@ -121,9 +132,13 @@ class RunCommand extends Command
                 OutputInterface::VERBOSITY_VERBOSE
             );
 
-            $isSmokeTest ?
-              $this->runSmokeTests($definition, $report, $progress) :
-              $this->runTests($definition, $report, $progress);
+            try {
+                $isSmokeTest ?
+                  $this->runSmokeTests($definition, $report, $progress, $isFailFast) :
+                  $this->runTests($definition, $report, $progress, $isFailFast);
+            } catch (ExecutionException) {
+                break;
+            }
         }
     }
 
@@ -149,8 +164,12 @@ class RunCommand extends Command
         $testSummary->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
     }
 
-    private function runSmokeTests(Definition $definition, Report $report, ConsoleSectionOutput $progress): void
-    {
+    private function runSmokeTests(
+        Definition $definition,
+        Report $report,
+        ConsoleSectionOutput $progress,
+        bool $isFailFast
+    ): void {
         $assertionCount = 0;
         $failureCount = 0;
 
@@ -176,16 +195,24 @@ class RunCommand extends Command
             $failureCount++;
 
             $progress->write('<error>F</error>');
-        }
 
-        $report->setNumberOfAssertions($assertionCount);
-        $report->setNumberOfFailures($failureCount);
-        $report->setSourceRowCount($sourceRowCounts);
-        $report->setDestinationRowCount($destinationRowCounts);
+            if ($isFailFast) {
+                throw new ExecutionException();
+            }
+        } finally {
+            $report->setNumberOfAssertions($assertionCount);
+            $report->setNumberOfFailures($failureCount);
+            $report->setSourceRowCount($sourceRowCounts);
+            $report->setDestinationRowCount($destinationRowCounts);
+        }
     }
 
-    private function runTests(Definition $definition, Report $report, ConsoleSectionOutput $progress): void
-    {
+    private function runTests(
+        Definition $definition,
+        Report $report,
+        ConsoleSectionOutput $progress,
+        bool $isFailFast
+    ): void {
         $assertionCount = 0;
         $failureCount = 0;
         $sourceCount = 0;
@@ -227,7 +254,7 @@ class RunCommand extends Command
                     $assertionCount++;
                     $test->execute($sourceValue, $destinationValue);
                     $progress->write('<info>P</info>');
-                } catch (ExpectationFailedException $exception) {
+                } catch (ExpectationFailedException) {
                     $failureCount++;
                     $progress->write('<error>F</error>');
 
@@ -235,6 +262,15 @@ class RunCommand extends Command
                       'Source' => $sourceValue[$test->getSourceField()],
                       'Destination' => $destinationValue[$test->getDestinationField()],
                     ]);
+
+                    if ($isFailFast) {
+                        throw new ExecutionException();
+                    }
+                } finally {
+                    $report->setNumberOfAssertions($assertionCount);
+                    $report->setNumberOfFailures($failureCount);
+                    $report->setSourceRowCount($sourceCount);
+                    $report->setDestinationRowCount($destinationCount);
                 }
             }
         }
@@ -249,8 +285,6 @@ class RunCommand extends Command
             $destinationIterator->next();
         }
 
-        $report->setNumberOfAssertions($assertionCount);
-        $report->setNumberOfFailures($failureCount);
         $report->setSourceRowCount($sourceCount);
         $report->setDestinationRowCount($destinationCount);
     }
