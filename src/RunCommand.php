@@ -55,7 +55,7 @@ class RunCommand extends Command
                 'fail-fast',
                 null,
                 InputOption::VALUE_NONE,
-                'Specified whether the test should return early in case of a failure.'
+                'Specifies whether the test should return early in case of a failure.'
             );
     }
 
