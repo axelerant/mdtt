@@ -20,8 +20,8 @@ class DefaultLogger implements LoggerInterface
         $reflection = new \ReflectionClass(ClassLoader::class);
         /** @var string $filename */
         $filename = $reflection->getFileName();
-        $rootDir = dirname($filename, 2);
-        $this->logger->pushHandler(new StreamHandler($rootDir . '/logs/test.log', Logger::EMERGENCY));
+        $rootDir = dirname($filename, 3);
+        $this->logger->pushHandler(new StreamHandler($rootDir . '/logs/' . time() .'.log', Logger::EMERGENCY));
     }
 
     /**
