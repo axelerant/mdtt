@@ -17,10 +17,12 @@ class DefaultLogger implements LoggerInterface
     public function __construct(Logger $logger)
     {
         $this->logger = $logger;
+
         $reflection = new \ReflectionClass(ClassLoader::class);
         /** @var string $filename */
         $filename = $reflection->getFileName();
         $rootDir = dirname($filename, 3);
+
         $this->logger->pushHandler(new StreamHandler($rootDir . '/logs/' . time() .'.log', Logger::EMERGENCY));
     }
 
