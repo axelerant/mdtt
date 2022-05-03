@@ -12,6 +12,31 @@ class Report
     private int $sourceRowCount = 0;
     private int $destinationRowCount = 0;
 
+    public function incrementNumberOfTestDefinitions(): void
+    {
+        ++$this->numberOfTestDefinitions;
+    }
+
+    public function incrementNumberOfAssertions(): void
+    {
+        ++$this->numberOfAssertions;
+    }
+
+    public function incrementNumberOfFailures(): void
+    {
+        ++$this->numberOfFailures;
+    }
+
+    public function incrementSourceRowCount():void
+    {
+        ++$this->sourceRowCount;
+    }
+
+    public function incrementDestinationRowCount(): void
+    {
+        ++$this->destinationRowCount;
+    }
+
     /**
      * @param int $numberOfTestDefinitions
      */

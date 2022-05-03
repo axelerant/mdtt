@@ -82,8 +82,6 @@ class RunCommand extends Command
             ]);
             /** @var \Mdtt\Definition\Definition[] $definitions */
             $definitions = $this->definitionLoader->validate($rawTestDefinitions);
-
-            $report->setNumberOfTestDefinitions(count($definitions));
         } catch (IOException $exception) {
             $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             return Command::INVALID;
@@ -135,6 +133,8 @@ class RunCommand extends Command
         ConsoleSectionOutput $progress
     ): void {
         foreach ($definitions as $definition) {
+            $report->incrementNumberOfTestDefinitions();
+
             $progress->writeln(
                 sprintf(
                     "Running the tests of definition id: %s",
@@ -185,9 +185,6 @@ class RunCommand extends Command
         ConsoleSectionOutput $progress,
         bool $isFailFast
     ): void {
-        $assertionCount = 0;
-        $failureCount = 0;
-
         $source = $definition->getSource();
         $destination = $definition->getDestination();
 
@@ -198,7 +195,7 @@ class RunCommand extends Command
         $destinationRowCounts = iterator_count($destinationIterator);
 
         try {
-            $assertionCount++;
+            $report->incrementNumberOfAssertions();
 
             Assert::assertSame(
                 $sourceRowCounts,
@@ -207,7 +204,7 @@ class RunCommand extends Command
 
             $progress->write('<info>P</info>');
         } catch (ExpectationFailedException) {
-            $failureCount++;
+            $report->incrementNumberOfFailures();
 
             $progress->write('<error>F</error>');
 
@@ -217,8 +214,6 @@ class RunCommand extends Command
         } catch (\Exception $exception) {
             throw new ExecutionException($exception->getMessage());
         } finally {
-            $report->setNumberOfAssertions($assertionCount);
-            $report->setNumberOfFailures($failureCount);
             $report->setSourceRowCount($sourceRowCounts);
             $report->setDestinationRowCount($destinationRowCounts);
         }
@@ -230,11 +225,6 @@ class RunCommand extends Command
         ConsoleSectionOutput $progress,
         bool $isFailFast
     ): void {
-        $assertionCount = 0;
-        $failureCount = 0;
-        $sourceCount = 0;
-        $destinationCount = 0;
-
         $source = $definition->getSource();
         $destination = $definition->getDestination();
 
@@ -247,8 +237,8 @@ class RunCommand extends Command
         $combinedIterators->attachIterator($destinationIterator);
 
         foreach ($combinedIterators as [$sourceValue, $destinationValue]) {
-            $sourceCount++;
-            $destinationCount++;
+            $report->incrementSourceRowCount();
+            $report->incrementDestinationRowCount();
 
             $progress->writeln(
                 sprintf(
@@ -268,11 +258,11 @@ class RunCommand extends Command
                 }
 
                 try {
-                    $assertionCount++;
+                    $report->incrementNumberOfAssertions();
                     $test->execute($sourceValue, $destinationValue);
                     $progress->write('<info>P</info>');
                 } catch (ExpectationFailedException) {
-                    $failureCount++;
+                    $report->incrementNumberOfFailures();
                     $progress->write('<error>F</error>');
 
                     $this->logger->emergency('Source and destination does not match.', [
@@ -285,26 +275,18 @@ class RunCommand extends Command
                     }
                 } catch (\Exception $exception) {
                     throw new ExecutionException($exception->getMessage());
-                } finally {
-                    $report->setNumberOfAssertions($assertionCount);
-                    $report->setNumberOfFailures($failureCount);
-                    $report->setSourceRowCount($sourceCount);
-                    $report->setDestinationRowCount($destinationCount);
                 }
             }
         }
 
         while ($sourceIterator->valid()) {
-            $sourceCount++;
+            $report->incrementSourceRowCount();
             $sourceIterator->next();
         }
 
         while ($destinationIterator->valid()) {
-            $destinationCount++;
+            $report->incrementDestinationRowCount();
             $destinationIterator->next();
         }
-
-        $report->setSourceRowCount($sourceCount);
-        $report->setDestinationRowCount($destinationCount);
     }
 }
