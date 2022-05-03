@@ -186,6 +186,10 @@ You can view all available options by doing this:
 ./vendor/bin/mdtt run --email foo@bar.mail
 ```
 
+### Logs
+
+By default, the log files are created inside directory called `logs`. The directory will be present in the root of the test suite. The log files are named based on the datetime when the test is executed.
+
 ## Features
 
 ## Supported types of source
