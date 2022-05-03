@@ -147,7 +147,7 @@ class RunCommand extends Command
                 $isSmokeTest ?
                   $this->runSmokeTests($definition, $report, $progress, $isFailFast) :
                   $this->runTests($definition, $report, $progress, $isFailFast);
-            } catch (ExecutionException) {
+            } catch (FailFastException) {
                 break;
             } catch (\Exception $exception) {
                 throw new ExecutionException($exception->getMessage());
