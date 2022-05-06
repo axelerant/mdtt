@@ -266,6 +266,7 @@ class RunCommand extends Command
                     $progress->write('<error>F</error>');
 
                     $this->logger->emergency('Source and destination does not match.', [
+                      'Definition' => $definition->getId(),
                       'Source' => $sourceValue[$test->getSourceField()],
                       'Destination' => $destinationValue[$test->getDestinationField()],
                     ]);
