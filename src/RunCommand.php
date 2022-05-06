@@ -214,8 +214,8 @@ class RunCommand extends Command
         } catch (\Exception $exception) {
             throw new ExecutionException($exception->getMessage());
         } finally {
-            $report->setSourceRowCount($sourceRowCounts);
-            $report->setDestinationRowCount($destinationRowCounts);
+            $report->setSourceRowCount($report->getSourceRowCount() + $sourceRowCounts);
+            $report->setDestinationRowCount($report->getDestinationRowCount() + $destinationRowCounts);
         }
     }
 
