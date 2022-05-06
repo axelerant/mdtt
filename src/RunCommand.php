@@ -173,10 +173,10 @@ class RunCommand extends Command
     private function writeTestSummary(Report $report, ConsoleSectionOutput $testSummary): void
     {
         $testSummary->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
-        $testSummary->writeln(sprintf("Number of assertions: %d", $report->getNumberOfAssertions()));
+        $testSummary->writeln(sprintf("Number of assertions made: %d", $report->getNumberOfAssertions()));
         $testSummary->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
-        $testSummary->writeln(sprintf("Number of rows in source: %d", $report->getSourceRowCount()));
-        $testSummary->writeln(sprintf("Number of rows in destination: %d", $report->getDestinationRowCount()));
+        $testSummary->writeln(sprintf("Number of compared rows in source: %d", $report->getSourceRowCount()));
+        $testSummary->writeln(sprintf("Number of compared rows in destination: %d", $report->getDestinationRowCount()));
     }
 
     private function runSmokeTests(
