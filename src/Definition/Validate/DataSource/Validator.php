@@ -37,43 +37,49 @@ class Validator
         if ($dataSourceType === "database") {
             $this->doValidateDatabase($rawDataSourceDefinition);
 
-            if ($type === "source") {
-                return new \Mdtt\Source\Database(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['database']
-                );
-            }
-
-            if ($type === "destination") {
-                return new \Mdtt\Destination\Database(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['database']
-                );
-            }
+            return new \Mdtt\DataSource\Database(
+                $rawDataSourceDefinition['data'],
+                $rawDataSourceDefinition['database']
+            );
         }
 
         if ($dataSourceType === "json") {
             $this->doValidateJson($rawDataSourceDefinition);
+            $username = null;
+            $password = null;
+            $protocol = null;
 
-            if (isset($rawDataSourceDefinition['auth_basic'])) {
-                $this->jsonDataSourceUtility->setAuthBasicCredential($rawDataSourceDefinition['auth_basic']);
+            if (isset($rawDataSourceDefinition['credential'])) {
+                $specification = require "tests/mdtt/spec.php";
+
+                $httpSpecification = $specification['http'];
+                /** @var string $credentialKey */
+                $credentialKey = $rawDataSourceDefinition['credential'];
+
+                if (!isset(
+                    $httpSpecification[$credentialKey]['username'],
+                    $httpSpecification[$credentialKey]['password']
+                )) {
+                    throw new SetupException(
+                        "Basic auth username and password are not provided, but credential is specified."
+                    );
+                }
+
+                $username = $httpSpecification[$credentialKey]['username'];
+                $password = $httpSpecification[$credentialKey]['password'];
+                $protocol = $httpSpecification[$credentialKey]['protocol'] ?? null;
             }
 
-            if ($type === "source") {
-                return new \Mdtt\Source\Json(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['selector'],
-                    $this->jsonDataSourceUtility,
-                );
-            }
+            $datasource = new \Mdtt\DataSource\Json(
+                $rawDataSourceDefinition['data'],
+                $rawDataSourceDefinition['selector'],
+                $this->jsonDataSourceUtility,
+            );
+            $datasource->setUsername($username);
+            $datasource->setPassword($password);
+            $datasource->setProtocol($protocol);
 
-            if ($type === "destination") {
-                return new \Mdtt\Destination\Json(
-                    $rawDataSourceDefinition['data'],
-                    $rawDataSourceDefinition['selector'],
-                    $this->jsonDataSourceUtility
-                );
-            }
+            return $datasource;
         }
 
         throw new SetupException(sprintf("Unexpected data source type %s and data source definition passed.", $type));

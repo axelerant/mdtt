@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Mdtt\Utility\DataSource;
 
-use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\StreamWrapper;
 use JsonMachine\Exception\InvalidArgumentException;
 use JsonMachine\Items;
@@ -16,33 +15,28 @@ use Psr\Http\Client\ClientExceptionInterface;
 class Json
 {
     private HttpClient $httpClient;
-    private ?string $authBasicCredential;
 
     public function __construct(HttpClient $httpClient)
     {
         $this->httpClient = $httpClient;
     }
 
-    /**
-     * @param string $authBasicCredential
-     */
-    public function setAuthBasicCredential(string $authBasicCredential): void
-    {
-        $this->authBasicCredential = $authBasicCredential;
-    }
-
-    public function getItems(string $data, string $selector): Items
-    {
+    public function getItems(
+        string $data,
+        string $selector,
+        ?string $username,
+        ?string $password,
+        ?string $protocol
+    ): Items {
         $httpClient = $this->httpClient->getClient();
-        $request = new Request('GET', $data);
+        $headers = [];
 
-        if (isset($this->authBasicCredential)) {
-            $credential = explode(':', $this->authBasicCredential);
-            $request->withHeader('auth', $credential);
+        if (isset($username, $password)) {
+            $headers['auth'] = [$username, $password, $protocol ?? 'basic'];
         }
 
         try {
-            $response = $httpClient->sendRequest($request);
+            $response = $httpClient->request('GET', $data, $headers);
         } catch (ClientExceptionInterface $e) {
             throw new ExecutionException($e->getMessage());
         }
