@@ -209,7 +209,7 @@ class RunCommand extends Command
             $progress->write('<error>F</error>');
 
             if ($isFailFast) {
-                throw new ExecutionException();
+                throw new FailFastException();
             }
         } catch (\Exception $exception) {
             throw new ExecutionException($exception->getMessage());
