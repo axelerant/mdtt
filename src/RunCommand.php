@@ -72,6 +72,7 @@ class RunCommand extends Command
         $testSummary = $output->section();
         $report = new Report();
 
+        // Setup.
         try {
             $progress->writeln("Loading test definitions", OutputInterface::VERBOSITY_DEBUG);
 
@@ -92,13 +93,16 @@ class RunCommand extends Command
         /** @var bool $isFailFast */
         $isFailFast = $input->getOption('fail-fast');
 
+        // Tests run.
         try {
             $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
         } catch (\Exception $exception) {
             $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+            $this->writeTestSummary($report, $testSummary);
             return Command::INVALID;
         }
 
+        // Notification.
         try {
             $this->notifyTestCompletion($input, $progress);
         } catch (\Exception $exception) {
