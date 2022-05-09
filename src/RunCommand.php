@@ -123,11 +123,11 @@ class RunCommand extends Command
         ?string $notificationEmail
     ): void {
         $readableReport = sprintf(
-            'Number of test definitions: %d\\n'.
-            'Number of assertions made: %d\\n' .
-            'Number of failures: %d\\n' .
-            'Number of compared rows in source: %d\\n' .
-            'Number of compared rows in destination: %d',
+            "Number of test definitions: %d\n".
+            "Number of assertions made: %d\n" .
+            "Number of failures: %d\\n" .
+            "Number of compared rows in source: %d\\n" .
+            "Number of compared rows in destination: %d",
             $report->getNumberOfTestDefinitions(),
             $report->getNumberOfAssertions(),
             $report->getNumberOfFailures(),
