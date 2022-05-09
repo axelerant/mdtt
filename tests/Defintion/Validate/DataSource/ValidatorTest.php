@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Test\Definition\Validate\DataSource;
 
+use Mdtt\DataSource\Database;
 use Mdtt\Definition\Validate\DataSource\Validator;
 use Mdtt\Exception\SetupException;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
@@ -34,6 +35,29 @@ class ValidatorTest extends TestCase
         $this->expectExceptionMessage($expectedExceptionMessage);
 
         $this->validator->validate($type, $rawDataSourceDefinition);
+    }
+
+    public function testValidateDatabaseException(): void
+    {
+        $this->expectException(SetupException::class);
+        $this->expectExceptionMessage('All information are not passed for database');
+
+        $this->validator->validate('source', [
+          "type" => "database",
+        ]);
+    }
+
+    public function testValidateDatabase(): void
+    {
+        $datasource = $this->validator->validate('source', [
+          "type" => "database",
+          "database" => "source_db",
+          "data" => "select * from users",
+        ]);
+
+        self::assertInstanceOf(Database::class, $datasource);
+        self::assertSame('select * from users', $datasource->getData());
+        self::assertSame('source_db', $datasource->getDatabaseKey());
     }
 
     public function validateExceptionDataProvider(): array
