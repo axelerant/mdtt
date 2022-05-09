@@ -7,7 +7,6 @@ namespace Mdtt;
 use Mdtt\Definition\Definition;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\FailFastException;
-use Mdtt\Exception\SetupException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
 use PHPUnit\Framework\Assert;
@@ -92,24 +91,22 @@ class RunCommand extends Command
         $isSmokeTest = $input->getOption('smoke-test');
         /** @var bool $isFailFast */
         $isFailFast = $input->getOption('fail-fast');
+        /** @var string|null $notificationEmail */
+        $notificationEmail = $input->getOption('email');
 
         // Tests run.
         try {
             $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
         } catch (\Exception $exception) {
             $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
-            $this->writeTestSummary($report, $testSummary);
+
+            $this->finalizeTestRun($report, $testSummary, $notificationEmail);
+
             return Command::INVALID;
         }
 
         // Notification.
-        try {
-            $this->notifyTestCompletion($input, $progress);
-        } catch (\Exception $exception) {
-            $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
-        }
-
-        $this->writeTestSummary($report, $testSummary);
+        $this->finalizeTestRun($report, $testSummary, $notificationEmail);
 
         if ($report->isFailure()) {
             $testSummary->writeln("<error>FAILED</error>");
@@ -118,6 +115,35 @@ class RunCommand extends Command
 
         $testSummary->writeln("<info>OK</info>");
         return Command::SUCCESS;
+    }
+
+    private function finalizeTestRun(
+        Report $report,
+        ConsoleSectionOutput $testSummary,
+        ?string $notificationEmail
+    ): void {
+        $readableReport = sprintf(
+            'Number of test definitions: %d\\n'.
+            'Number of assertions made: %d\\n' .
+            'Number of failures: %d\\n' .
+            'Number of compared rows in source: %d\\n' .
+            'Number of compared rows in destination: %d',
+            $report->getNumberOfTestDefinitions(),
+            $report->getNumberOfAssertions(),
+            $report->getNumberOfFailures(),
+            $report->getSourceRowCount(),
+            $report->getDestinationRowCount()
+        );
+
+        $testSummary->writeln($readableReport);
+
+        if ($notificationEmail !== null) {
+            try {
+                $this->email->sendMessage("Test completed", $readableReport, $notificationEmail);
+            } catch (\Exception $exception) {
+                $testSummary->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
+            }
+        }
     }
 
     /**
@@ -157,30 +183,6 @@ class RunCommand extends Command
                 throw new ExecutionException($exception->getMessage());
             }
         }
-    }
-
-    private function notifyTestCompletion(InputInterface $input, ConsoleSectionOutput $progress): void
-    {
-        /** @var string|null $email */
-        $email = $input->getOption('email');
-        if ($email !== null) {
-            try {
-                $this->email->sendMessage("Test completed", "Test completed", $email);
-            } catch (SetupException $exception) {
-                $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
-            } catch (\Exception $exception) {
-                throw new ExecutionException($exception->getMessage());
-            }
-        }
-    }
-
-    private function writeTestSummary(Report $report, ConsoleSectionOutput $testSummary): void
-    {
-        $testSummary->writeln(sprintf("Number of test definitions: %d", $report->getNumberOfTestDefinitions()));
-        $testSummary->writeln(sprintf("Number of assertions made: %d", $report->getNumberOfAssertions()));
-        $testSummary->writeln(sprintf("Number of failures: %d", $report->getNumberOfFailures()));
-        $testSummary->writeln(sprintf("Number of compared rows in source: %d", $report->getSourceRowCount()));
-        $testSummary->writeln(sprintf("Number of compared rows in destination: %d", $report->getDestinationRowCount()));
     }
 
     private function runSmokeTests(
