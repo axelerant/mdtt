@@ -37,6 +37,12 @@ class RunCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'The email address where the notification will be sent when test completes.'
+            )
+            ->addOption(
+                'smoke-test',
+                null,
+                InputOption::VALUE_NONE,
+                'Specifies whether it should perform a smoke test, instead of a detailed row by row comparison.'
             );
     }
 
@@ -54,8 +60,11 @@ class RunCommand extends Command
             ]);
             /** @var \Mdtt\Definition\Definition[] $definitions */
             $definitions = $this->definitionLoader->validate($rawTestDefinitions);
+
+            /** @var bool $isSmokeTest */
+            $isSmokeTest = $input->getOption('smoke-test');
             foreach ($definitions as $definition) {
-                $definition->runTests();
+                $isSmokeTest ? $definition->runSmokeTests() : $definition->runTests();
             }
         } catch (IOException $exception) {
             $this->logger->error($exception->getMessage());

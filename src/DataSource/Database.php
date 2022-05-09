@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Mdtt\Source;
+namespace Mdtt\DataSource;
 
 use Iterator;
-use Mdtt\DataSource;
 use Mdtt\Exception\SetupException;
-use Mdtt\Utility\DataSource\Database as DbDataSource;
+use Mdtt\Utility\DataSource\Database as DbDatabase;
 use mysqli_result;
 
 class Database extends DataSource
@@ -24,7 +23,7 @@ class Database extends DataSource
     /**
      * @inheritDoc
      */
-    public function getItem(): Iterator
+    public function getIterator(): Iterator
     {
         $specification = require "tests/mdtt/spec.php";
 
@@ -37,16 +36,16 @@ class Database extends DataSource
             $databases[$this->databaseKey]['host'],
             $databases[$this->databaseKey]['port']
         )) {
-            throw new SetupException("Source database not specified correctly");
+            throw new SetupException("Destination database not specified correctly");
         }
 
         if (!isset($this->resultSet)) {
-            $this->resultSet = DbDataSource::prepareResultSet(
+            $this->resultSet = DbDatabase::prepareResultSet(
                 $databases[$this->databaseKey]['database'],
                 $databases[$this->databaseKey]['username'],
                 $databases[$this->databaseKey]['password'],
                 $databases[$this->databaseKey]['host'],
-                (int)$databases[$this->databaseKey]['port'],
+                (int) $databases[$this->databaseKey]['port'],
                 $this->data
             );
         }

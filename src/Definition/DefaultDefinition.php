@@ -58,33 +58,65 @@ class DefaultDefinition extends Definition
     /**
      * @inheritDoc
      */
+    public function runSmokeTests(): void
+    {
+        $source = $this->getSource();
+        $destination = $this->getDestination();
+        $this->logger->info(sprintf("Running smoke tests of definition id: %s", $this->getId()));
+
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
+
+        $sourceRowCounts = iterator_count($sourceIterator);
+        $destinationRowCounts = iterator_count($destinationIterator);
+
+        try {
+            Assert::assertSame(
+                $sourceRowCounts,
+                $destinationRowCounts
+            );
+
+            $this->logger->notice("Source row count matches with destination row count.", [
+              'Source row count' => $sourceRowCounts,
+              'Destination row count' => $destinationRowCounts,
+            ]);
+        } catch (ExpectationFailedException) {
+            $this->logger->emergency("Source row count does not matches with destination row count.", [
+              'Source row count' => $sourceRowCounts,
+              'Destination row count' => $destinationRowCounts,
+            ]);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function runTests(): void
     {
         $source = $this->getSource();
         $destination = $this->getDestination();
         $this->logger->info(sprintf("Running the tests of definition id: %s", $this->getId()));
 
-        $sourceData = $source->getItem();
-        $destinationData = $destination->getItem();
+        $sourceIterator = $source->getIterator();
+        $destinationIterator = $destination->getIterator();
 
         // Combining the iterators is required so that the tests can be run for every returned item.
-        $combinedDataSources = new \MultipleIterator();
-        $combinedDataSources->attachIterator($sourceData);
-        $combinedDataSources->attachIterator($destinationData);
+        $combinedIterators = new \MultipleIterator();
+        $combinedIterators->attachIterator($sourceIterator);
+        $combinedIterators->attachIterator($destinationIterator);
 
-        foreach ($combinedDataSources as [$sourceValue, $destinationValue]) {
+        foreach ($combinedIterators as [$sourceValue, $destinationValue]) {
             foreach ($this->getTests() as $test) {
                 $test->execute($sourceValue, $destinationValue);
             }
         }
 
         try {
-            Assert::assertTrue(
-                !$sourceData->valid() && !$destinationData->valid(),
-                "Number of source items does not match number of destination items."
-            );
-        } catch (ExpectationFailedException $exception) {
-            $this->logger->emergency($exception->getMessage());
+            Assert::assertTrue(!$sourceIterator->valid() && !$destinationIterator->valid());
+
+            $this->logger->notice("Source row count matches with destination row count.");
+        } catch (ExpectationFailedException) {
+            $this->logger->emergency("Source row count does not matches with destination row count.");
         }
     }
 }

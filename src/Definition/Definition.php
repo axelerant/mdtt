@@ -2,7 +2,7 @@
 
 namespace Mdtt\Definition;
 
-use Mdtt\DataSource;
+use Mdtt\DataSource\DataSource;
 use Mdtt\Test\Test;
 
 abstract class Definition
@@ -31,7 +31,7 @@ abstract class Definition
     }
 
     /**
-     * @param \Mdtt\DataSource $source
+     * @param \Mdtt\DataSource\DataSource $source
      */
     public function setSource(DataSource $source): void
     {
@@ -47,7 +47,7 @@ abstract class Definition
     }
 
     /**
-     * @return \Mdtt\DataSource
+     * @return \Mdtt\DataSource\DataSource
      */
     public function getSource(): DataSource
     {
@@ -71,7 +71,7 @@ abstract class Definition
     }
 
     /**
-     * @param \Mdtt\DataSource $destination
+     * @param \Mdtt\DataSource\DataSource $destination
      */
     public function setDestination(DataSource $destination): void
     {
@@ -79,10 +79,16 @@ abstract class Definition
     }
 
     /**
-     * @return \Mdtt\DataSource
+     * @return \Mdtt\DataSource\DataSource
      */
     public function getDestination(): DataSource
     {
         return $this->destination;
     }
+
+    /**
+     * Runs smoke tests.
+     * @return void
+     */
+    abstract public function runSmokeTests(): void;
 }
