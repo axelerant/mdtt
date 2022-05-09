@@ -36,6 +36,16 @@ class ValidatorTest extends TestCase
         $this->validator->validate($type, $rawDataSourceDefinition);
     }
 
+    public function testValidateDatabaseException(): void
+    {
+        $this->expectException(SetupException::class);
+        $this->expectExceptionMessage('All information are not passed for database');
+
+        $this->validator->validate('source', [
+          "type" => "database",
+        ]);
+    }
+
     public function validateExceptionDataProvider(): array
     {
         return [
