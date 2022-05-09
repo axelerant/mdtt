@@ -138,8 +138,13 @@ class RunCommand extends Command
         $testSummary->writeln($readableReport);
 
         if ($notificationEmail !== null) {
+            $emailSubject = 'Tests passed!';
+            if ($report->isFailure()) {
+                $emailSubject = 'Tests failed!';
+            }
+
             try {
-                $this->email->sendMessage("Test completed", $readableReport, $notificationEmail);
+                $this->email->sendMessage($emailSubject, $readableReport, $notificationEmail);
             } catch (\Exception $exception) {
                 $testSummary->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             }
