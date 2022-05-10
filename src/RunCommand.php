@@ -102,6 +102,8 @@ class RunCommand extends Command
 
             $this->finalizeTestRun($report, $testSummary, $notificationEmail);
 
+            $testSummary->writeln("<error>INVALID</error>");
+
             return Command::INVALID;
         }
 
