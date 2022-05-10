@@ -34,7 +34,7 @@ class ValidatorTest extends TestCase
         $this->expectException(SetupException::class);
         $this->expectExceptionMessage($expectedExceptionMessage);
 
-        $this->validator->validate($type, $rawDataSourceDefinition);
+        $this->validator->validate($type, $rawDataSourceDefinition, 'tests/fixtures/spec.php');
     }
 
     public function testValidateDatabaseException(): void
@@ -44,7 +44,7 @@ class ValidatorTest extends TestCase
 
         $this->validator->validate('source', [
           "type" => "database",
-        ]);
+        ], 'tests/fixtures/spec.php');
     }
 
     public function testValidateDatabase(): void
@@ -53,11 +53,15 @@ class ValidatorTest extends TestCase
           "type" => "database",
           "database" => "source_db",
           "data" => "select * from users",
-        ]);
+        ], 'tests/fixtures/spec.php');
 
         self::assertInstanceOf(Database::class, $datasource);
         self::assertSame('select * from users', $datasource->getData());
-        self::assertSame('source_db', $datasource->getDatabaseKey());
+        self::assertSame('sqlserver', $datasource->getDatabase());
+        self::assertSame('sql', $datasource->getUsername());
+        self::assertSame('server', $datasource->getPassword());
+        self::assertSame('foo.bar', $datasource->getHost());
+        self::assertSame(59002, $datasource->getPort());
     }
 
     public function testValidateJsonException(): void
@@ -67,7 +71,7 @@ class ValidatorTest extends TestCase
 
         $this->validator->validate('source', [
           'type' => 'json',
-        ]);
+        ], 'tests/fixtures/spec.php');
     }
 
     public function validateExceptionDataProvider(): array

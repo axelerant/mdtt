@@ -59,7 +59,7 @@ class Validator
         }
 
         if ($dataSourceType === "json") {
-            $this->doValidateJson($rawDataSourceDefinition, $specification['http']);
+            $this->doValidateJson($rawDataSourceDefinition, $specification['http'] ?? null);
             $username = null;
             $password = null;
             $protocol = null;
@@ -120,14 +120,14 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
-     * @param array<string, array<string, string>> $httpSpecification
+     * @param array<string, array<string, string>>|null $httpSpecification
      *
      * @return void
      * @throws \Mdtt\Exception\SetupException
      */
     private function doValidateJson(
         array $rawDataSourceDefinition,
-        array $httpSpecification
+        ?array $httpSpecification
     ): void {
         $jsonValidator = new Json();
         $isValid = $jsonValidator->validate($rawDataSourceDefinition, $httpSpecification);

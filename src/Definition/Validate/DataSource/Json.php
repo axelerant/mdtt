@@ -11,7 +11,7 @@ class Json implements Type
      */
     public function validate(
         array $rawDataSourceDefinition,
-        array $httpSpecification
+        ?array $httpSpecification
     ): bool {
         $isSelectorSpecified = isset($rawDataSourceDefinition['selector']);
 
@@ -19,7 +19,7 @@ class Json implements Type
             return false;
         }
 
-        $isAuthProtected = isset($rawDataSourceDefinition['credential']);
+        $isAuthProtected = isset($rawDataSourceDefinition['credential'], $httpSpecification);
 
         if (!$isAuthProtected) {
             return true;
