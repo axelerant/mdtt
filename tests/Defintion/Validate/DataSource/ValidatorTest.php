@@ -60,6 +60,16 @@ class ValidatorTest extends TestCase
         self::assertSame('source_db', $datasource->getDatabaseKey());
     }
 
+    public function testValidateJsonException(): void
+    {
+        $this->expectException(SetupException::class);
+        $this->expectExceptionMessage("All information are not passed for json");
+
+        $this->validator->validate('source', [
+          'type' => 'json',
+        ]);
+    }
+
     public function validateExceptionDataProvider(): array
     {
         return [
