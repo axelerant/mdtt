@@ -59,14 +59,12 @@ class Validator
         }
 
         if ($dataSourceType === "json") {
-            $this->doValidateJson($rawDataSourceDefinition);
+            $this->doValidateJson($rawDataSourceDefinition, $specification['http']);
             $username = null;
             $password = null;
             $protocol = null;
 
             if (isset($rawDataSourceDefinition['credential'])) {
-                $specification = require $specLocation;
-
                 $httpSpecification = $specification['http'];
                 /** @var string $credentialKey */
                 $credentialKey = $rawDataSourceDefinition['credential'];
@@ -102,17 +100,17 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
-     * @param array<string, array<string, array<string, string>>> $specification
+     * @param array<string, array<string, string>> $databaseSpecification
      *
      * @return void
      * @throws \Mdtt\Exception\SetupException
      */
     private function doValidateDatabase(
         array $rawDataSourceDefinition,
-        array $specification
+        array $databaseSpecification
     ): void {
         $dbValidator = new Database();
-        $isValid = $dbValidator->validate($rawDataSourceDefinition, $specification);
+        $isValid = $dbValidator->validate($rawDataSourceDefinition, $databaseSpecification);
         if (!$isValid) {
             throw new SetupException(
                 sprintf("All information are not passed for %s", $rawDataSourceDefinition['type'])
@@ -122,13 +120,17 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
+     * @param array<string, array<string, string>> $httpSpecification
      *
      * @return void
+     * @throws \Mdtt\Exception\SetupException
      */
-    private function doValidateJson(array $rawDataSourceDefinition): void
-    {
+    private function doValidateJson(
+        array $rawDataSourceDefinition,
+        array $httpSpecification
+    ): void {
         $jsonValidator = new Json();
-        $isValid = $jsonValidator->validate($rawDataSourceDefinition);
+        $isValid = $jsonValidator->validate($rawDataSourceDefinition, $httpSpecification);
         if (!$isValid) {
             throw new SetupException(
                 sprintf(

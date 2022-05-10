@@ -8,7 +8,7 @@ interface Type
      * Validates whether all required information are mentioned in the datasource definition.
      *
      * @param array<string> $rawDataSourceDefinition
-     * @param array<string, array<string, array<string, string>>> $specification
+     * @param array<string, array<string, string>> $specification
      *
      * @return bool
      */

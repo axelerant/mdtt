@@ -11,7 +11,7 @@ class Database implements Type
      */
     public function validate(
         array $rawDataSourceDefinition,
-        array $specification
+        array $databaseSpecification
     ): bool {
         $isDatabaseSpecified = isset($rawDataSourceDefinition['database']);
 
@@ -21,8 +21,6 @@ class Database implements Type
 
         /** @var string $databaseName */
         $databaseName = $rawDataSourceDefinition['database'];
-        /** @var array<string, array<string, string>> $databaseSpecification */
-        $databaseSpecification = $specification['databases'];
 
         return isset(
             $databaseSpecification[$databaseName]['database'],
