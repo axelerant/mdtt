@@ -2,6 +2,6 @@
 
 namespace Mdtt\Exception;
 
-class SetupException extends \RuntimeException
+class SetupException extends \Exception
 {
 }
