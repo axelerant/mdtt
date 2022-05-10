@@ -6,6 +6,7 @@ namespace Mdtt\Definition\Validate\DataSource;
 
 use Mdtt\DataSource\DataSource;
 use Mdtt\Exception\SetupException;
+use Mdtt\LoadDefinition\Load;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
 class Validator
@@ -22,12 +23,16 @@ class Validator
      *
      * @param string $type
      * @param array<string> $rawDataSourceDefinition
+     * @param string $specLocation
      *
      * @return \Mdtt\DataSource\DataSource
      * @throws \Mdtt\Exception\SetupException
      */
-    public function validate(string $type, array $rawDataSourceDefinition): DataSource
-    {
+    public function validate(
+        string $type,
+        array $rawDataSourceDefinition,
+        string $specLocation = Load::DEFAULT_SPEC_LOCATION
+    ): DataSource {
         if (!in_array($type, ["source", "destination"])) {
             throw new SetupException("Incorrect data source type is passed.");
         }
@@ -50,7 +55,7 @@ class Validator
             $protocol = null;
 
             if (isset($rawDataSourceDefinition['credential'])) {
-                $specification = require "tests/mdtt/spec.php";
+                $specification = require $specLocation;
 
                 $httpSpecification = $specification['http'];
                 /** @var string $credentialKey */
