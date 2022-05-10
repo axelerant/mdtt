@@ -9,8 +9,27 @@ class Database implements Type
     /**
      * @inheritDoc
      */
-    public function validate(array $rawDataSourceDefinition): bool
-    {
-        return isset($rawDataSourceDefinition['database']);
+    public function validate(
+        array $rawDataSourceDefinition,
+        array $specification
+    ): bool {
+        $isDatabaseSpecified = isset($rawDataSourceDefinition['database']);
+
+        if (!$isDatabaseSpecified) {
+            return false;
+        }
+
+        /** @var string $databaseName */
+        $databaseName = $rawDataSourceDefinition['database'];
+        /** @var array<string, array<string, string>> $databaseSpecification */
+        $databaseSpecification = $specification['databases'];
+
+        return isset(
+            $databaseSpecification[$databaseName]['database'],
+            $databaseSpecification[$databaseName]['username'],
+            $databaseSpecification[$databaseName]['password'],
+            $databaseSpecification[$databaseName]['host'],
+            $databaseSpecification[$databaseName]['port']
+        );
     }
 }

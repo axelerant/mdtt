@@ -9,7 +9,8 @@ class Json implements Type
     /**
      * @inheritDoc
      */
-    public function validate(array $rawDataSourceDefinition): bool
+    public function validate(array $rawDataSourceDefinition,
+      array $specification): bool
     {
         return isset($rawDataSourceDefinition['selector']);
     }

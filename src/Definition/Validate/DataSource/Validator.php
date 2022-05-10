@@ -37,14 +37,24 @@ class Validator
             throw new SetupException("Incorrect data source type is passed.");
         }
 
+        $specification = require $specLocation;
+
         /** @var string $dataSourceType */
         $dataSourceType = $rawDataSourceDefinition['type'];
         if ($dataSourceType === "database") {
-            $this->doValidateDatabase($rawDataSourceDefinition);
+            $this->doValidateDatabase($rawDataSourceDefinition, $specification['databases']);
+
+            $databaseName = $rawDataSourceDefinition['database'];
+            /** @var array<string, array<string, string>> $databaseSpecification */
+            $databaseSpecification = $specification['databases'];
 
             return new \Mdtt\DataSource\Database(
                 $rawDataSourceDefinition['data'],
-                $rawDataSourceDefinition['database']
+                $databaseSpecification[$databaseName]['database'],
+                $databaseSpecification[$databaseName]['username'],
+                $databaseSpecification[$databaseName]['password'],
+                $databaseSpecification[$databaseName]['host'],
+                (int) $databaseSpecification[$databaseName]['port']
             );
         }
 
@@ -92,13 +102,17 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
+     * @param array<string, array<string, array<string, string>>> $specification
      *
      * @return void
+     * @throws \Mdtt\Exception\SetupException
      */
-    private function doValidateDatabase(array $rawDataSourceDefinition): void
-    {
+    private function doValidateDatabase(
+        array $rawDataSourceDefinition,
+        array $specification
+    ): void {
         $dbValidator = new Database();
-        $isValid = $dbValidator->validate($rawDataSourceDefinition);
+        $isValid = $dbValidator->validate($rawDataSourceDefinition, $specification);
         if (!$isValid) {
             throw new SetupException(
                 sprintf("All information are not passed for %s", $rawDataSourceDefinition['type'])

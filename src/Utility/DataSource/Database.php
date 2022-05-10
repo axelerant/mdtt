@@ -9,6 +9,7 @@ use Mdtt\Exception\SetupException;
 
 class Database
 {
+
     /**
      * Obtains the result set from a database based on the query.
      *
@@ -20,6 +21,8 @@ class Database
      * @param string $query
      *
      * @return \mysqli_result
+     * @throws \Mdtt\Exception\SetupException
+     * @throws \Mdtt\Exception\ExecutionException
      */
     public static function prepareResultSet(
         string $database,
