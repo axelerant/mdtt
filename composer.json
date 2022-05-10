@@ -26,7 +26,7 @@
     },
     "scripts": {
         "php-cs": "./vendor/bin/phpcs src --standard=PSR2",
-        "php-cs-fixer": "./vendor/bin/php-cs-fixer fix src",
+        "php-cs-fixer": "./vendor/bin/php-cs-fixer fix",
         "phpstan": "./vendor/bin/phpstan analyse src --level max",
         "phpunit": "./vendor/bin/phpunit tests",
         "phpunit-with-coverage": "./vendor/bin/phpunit tests --coverage-clover coverage.xml",

@@ -21,6 +21,14 @@ class Database extends DataSource
     }
 
     /**
+     * @return string
+     */
+    public function getDatabaseKey(): string
+    {
+        return $this->databaseKey;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getIterator(): Iterator
