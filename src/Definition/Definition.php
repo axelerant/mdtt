@@ -17,12 +17,6 @@ abstract class Definition
     private DataSource $source;
 
     /**
-     * Runs the tests.
-     * @return void
-     */
-    abstract public function runTests(): void;
-
-    /**
      * @return \Mdtt\Test\Test[]
      */
     public function getTests(): array
@@ -85,10 +79,4 @@ abstract class Definition
     {
         return $this->destination;
     }
-
-    /**
-     * Runs smoke tests.
-     * @return void
-     */
-    abstract public function runSmokeTests(): void;
 }

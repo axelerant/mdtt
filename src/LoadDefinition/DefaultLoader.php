@@ -25,8 +25,11 @@ class DefaultLoader implements Load
      */
     private array $transformPlugins;
 
-    public function __construct(LoggerInterface $logger, Validator $validator, PluginManager $transformPluginManager)
-    {
+    public function __construct(
+        LoggerInterface $logger,
+        Validator $validator,
+        PluginManager $transformPluginManager
+    ) {
         $this->logger = $logger;
         $this->dataSourceValidator = $validator;
         $this->transformPluginManager = $transformPluginManager;
@@ -66,7 +69,7 @@ class DefaultLoader implements Load
         foreach ($yamlTestDefinitions as $yamlTestDefinition) {
             $this->doValidate($yamlTestDefinition);
 
-            $parsedTestDefinition = new DefaultDefinition($this->logger);
+            $parsedTestDefinition = new DefaultDefinition();
 
             /** @var string $id */
             $id = $yamlTestDefinition['id'];
@@ -102,7 +105,7 @@ class DefaultLoader implements Load
             $sourceData = $this->dataSourceValidator->validate("source", $sourceInformation);
             $parsedTestDefinition->setSource($sourceData);
         } catch (SetupException $exception) {
-            $this->logger->alert($exception->getMessage());
+            throw new SetupException($exception->getMessage());
         }
     }
 
@@ -120,7 +123,7 @@ class DefaultLoader implements Load
             $destinationData = $this->dataSourceValidator->validate("destination", $destinationInformation);
             $parsedTestDefinition->setDestination($destinationData);
         } catch (SetupException $exception) {
-            $this->logger->alert($exception->getMessage());
+            throw new SetupException($exception->getMessage());
         }
     }
 
