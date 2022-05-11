@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Mdtt\Notification;
 
+use http\Exception\RuntimeException;
 use Mdtt\Exception\SetupException;
-use Psr\Log\LoggerInterface;
 use SendGrid;
 use SendGrid\Mail\Mail;
 use SendGrid\Mail\To;
@@ -13,13 +13,6 @@ use SendGrid\Mail\TypeException;
 
 class Email implements Notification
 {
-    private LoggerInterface $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
     /**
      * @inheritDoc
      */
@@ -54,7 +47,7 @@ class Email implements Notification
             $email->setSubject($title);
             $email->addContent("text/plain", $message);
         } catch (TypeException $e) {
-            $this->logger->error($e->getMessage());
+            throw new RuntimeException($e->getMessage());
         }
 
         $sendgrid = new SendGrid($sendGridApiKey);
@@ -62,7 +55,7 @@ class Email implements Notification
         try {
             $sendgrid->send($email);
         } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+            throw new RuntimeException($e->getMessage());
         }
     }
 }

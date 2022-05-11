@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Mdtt\Logger;
 
+use Composer\Autoload\ClassLoader;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
@@ -16,7 +17,13 @@ class DefaultLogger implements LoggerInterface
     public function __construct(Logger $logger)
     {
         $this->logger = $logger;
-        $this->logger->pushHandler(new StreamHandler('php://stderr'));
+
+        $reflection = new \ReflectionClass(ClassLoader::class);
+        /** @var string $filename */
+        $filename = $reflection->getFileName();
+        $rootDir = dirname($filename, 3);
+
+        $this->logger->pushHandler(new StreamHandler($rootDir . '/logs/' . date('r') .'.log', Logger::EMERGENCY));
     }
 
     /**
