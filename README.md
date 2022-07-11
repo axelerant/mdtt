@@ -103,6 +103,51 @@ tests:
 
 #### JSON
 
+Before seeing the example, consider that the data is exposed by the _source_ legacy system in the following format:
+
+```json
+{
+      "jsonapi": {
+        "version": 1.2,
+      },
+      "results": [
+        {
+          "employee": {
+              "value": {
+                "id": 3453,
+                "name": "Aloy",
+                "email": "aloy@nora.tribe",
+                "gender": "female",
+                "status": "active"
+              }
+          }
+        },
+        {
+          "employee": {
+              "value": {
+                "id": 3452,
+                "name": "Varl",
+                "email": "varl@nora.tribe",
+                "gender": "male",
+                "status": "active"
+              }
+          }
+        },
+        {
+          "employee": {
+              "value": {
+                "id": 3450,
+                "name": "Rost",
+                "email": "rost@nora.tribe",
+                "gender": "male",
+                "status": "inactive"
+              }
+          }
+        }
+      ]
+    }
+```
+
 ```yaml
 id: validate_public_apis
 description: Validate public apis
@@ -111,7 +156,7 @@ group: migration_validation
 source:
   type: json
   data: https://dev.legacy-system.com/api/v1/users
-  # The pointer where all the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
+  # One-level up pointer where the data resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
   selector: "/results/-/employees"
   # Datasource basic authentication credentials. Note that the key is same as mentioned in the test specification. This is optional if the endpoint is publicly accessible.
   credential: source
@@ -119,7 +164,7 @@ source:
 destination:
   type: json
   data: https://dev.new-system.com/api/v1/users
-  selector: "/results/-/employees"
+  selector: "/employees"
   credential: destination
 tests:
   -
