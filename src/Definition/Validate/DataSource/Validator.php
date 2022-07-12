@@ -6,6 +6,7 @@ namespace Mdtt\Definition\Validate\DataSource;
 
 use Mdtt\DataSource\DataSource;
 use Mdtt\Exception\SetupException;
+use Mdtt\LoadDefinition\Load;
 use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 
 class Validator
@@ -22,36 +23,48 @@ class Validator
      *
      * @param string $type
      * @param array<string> $rawDataSourceDefinition
+     * @param string $specLocation
      *
      * @return \Mdtt\DataSource\DataSource
      * @throws \Mdtt\Exception\SetupException
      */
-    public function validate(string $type, array $rawDataSourceDefinition): DataSource
-    {
+    public function validate(
+        string $type,
+        array $rawDataSourceDefinition,
+        string $specLocation = Load::DEFAULT_SPEC_LOCATION
+    ): DataSource {
         if (!in_array($type, ["source", "destination"])) {
             throw new SetupException("Incorrect data source type is passed.");
         }
 
+        $specification = require $specLocation;
+
         /** @var string $dataSourceType */
         $dataSourceType = $rawDataSourceDefinition['type'];
         if ($dataSourceType === "database") {
-            $this->doValidateDatabase($rawDataSourceDefinition);
+            $this->doValidateDatabase($rawDataSourceDefinition, $specification['databases']);
+
+            $databaseName = $rawDataSourceDefinition['database'];
+            /** @var array<string, array<string, string>> $databaseSpecification */
+            $databaseSpecification = $specification['databases'];
 
             return new \Mdtt\DataSource\Database(
                 $rawDataSourceDefinition['data'],
-                $rawDataSourceDefinition['database']
+                $databaseSpecification[$databaseName]['database'],
+                $databaseSpecification[$databaseName]['username'],
+                $databaseSpecification[$databaseName]['password'],
+                $databaseSpecification[$databaseName]['host'],
+                (int) $databaseSpecification[$databaseName]['port']
             );
         }
 
         if ($dataSourceType === "json") {
-            $this->doValidateJson($rawDataSourceDefinition);
+            $this->doValidateJson($rawDataSourceDefinition, $specification['http'] ?? null);
             $username = null;
             $password = null;
             $protocol = null;
 
             if (isset($rawDataSourceDefinition['credential'])) {
-                $specification = require "tests/mdtt/spec.php";
-
                 $httpSpecification = $specification['http'];
                 /** @var string $credentialKey */
                 $credentialKey = $rawDataSourceDefinition['credential'];
@@ -87,13 +100,17 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
+     * @param array<string, array<string, string>> $databaseSpecification
      *
      * @return void
+     * @throws \Mdtt\Exception\SetupException
      */
-    private function doValidateDatabase(array $rawDataSourceDefinition): void
-    {
+    private function doValidateDatabase(
+        array $rawDataSourceDefinition,
+        array $databaseSpecification
+    ): void {
         $dbValidator = new Database();
-        $isValid = $dbValidator->validate($rawDataSourceDefinition);
+        $isValid = $dbValidator->validate($rawDataSourceDefinition, $databaseSpecification);
         if (!$isValid) {
             throw new SetupException(
                 sprintf("All information are not passed for %s", $rawDataSourceDefinition['type'])
@@ -103,13 +120,17 @@ class Validator
 
     /**
      * @param array<string> $rawDataSourceDefinition
+     * @param array<string, array<string, string>>|null $httpSpecification
      *
      * @return void
+     * @throws \Mdtt\Exception\SetupException
      */
-    private function doValidateJson(array $rawDataSourceDefinition): void
-    {
+    private function doValidateJson(
+        array $rawDataSourceDefinition,
+        ?array $httpSpecification
+    ): void {
         $jsonValidator = new Json();
-        $isValid = $jsonValidator->validate($rawDataSourceDefinition);
+        $isValid = $jsonValidator->validate($rawDataSourceDefinition, $httpSpecification);
         if (!$isValid) {
             throw new SetupException(
                 sprintf(
