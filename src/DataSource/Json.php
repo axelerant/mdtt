@@ -76,7 +76,11 @@ class Json extends DataSource
         }
 
         foreach ($this->items as $key => $item) {
-            if (isset($this->key) && $key === $this->key) {
+            if (isset($this->key)) {
+                if ($key === $this->key) {
+                    yield $item;
+                }
+            } else {
                 yield $item;
             }
         }
