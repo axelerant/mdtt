@@ -19,11 +19,14 @@ Basically you follow these steps:
 3. _Optionally_, specify transform plugins
 4. Run the tests
 
-You can find the basic template for the tool usage [here](https://github.com/axelerant/mdtt-usage).
+You can find the basic template for the tool
+usage [here](https://github.com/axelerant/mdtt-usage).
 
 ### Test specification
 
-Specify the test specification inside the directory `tests/mdtt`. The specification must be written inside the `spec.php`. Below is a sample specification:
+Specify the test specification inside the directory `tests/mdtt`. The
+specification must be written inside the `spec.php`. Below is a sample
+specification:
 
 ```php
 <?php
@@ -66,7 +69,10 @@ return [
 
 ### Test definitions
 
-The test definitions are written in `yaml` format, and must be present inside the directory `tests/mdtt`. Let's say that you want to validate the migrated user data. Create a file called `validate_users.yml`. The name of the file doesn't matter.
+The test definitions are written in `yaml` format, and must be present inside
+the directory `tests/mdtt`. Let's say that you want to validate the migrated
+user data. Create a file called `validate_users.yml`. The name of the file
+doesn't matter.
 
 #### Database
 
@@ -103,7 +109,8 @@ tests:
 
 #### JSON
 
-Before seeing the example, consider that the data is exposed by the _source_ legacy system in the following format:
+Before seeing the example, consider that the data is exposed by the _source_
+legacy system in the following format:
 
 ```json
 {
@@ -113,8 +120,8 @@ Before seeing the example, consider that the data is exposed by the _source_ leg
       "results": [
         {
           "employee": {
-              "value": {
-                "id": 3453,
+              "id": 3453,
+              "info": {
                 "name": "Aloy",
                 "email": "aloy@nora.tribe",
                 "gender": "female",
@@ -124,8 +131,8 @@ Before seeing the example, consider that the data is exposed by the _source_ leg
         },
         {
           "employee": {
-              "value": {
-                "id": 3452,
+              "id": 3452,
+              "info": {
                 "name": "Varl",
                 "email": "varl@nora.tribe",
                 "gender": "male",
@@ -135,14 +142,47 @@ Before seeing the example, consider that the data is exposed by the _source_ leg
         },
         {
           "employee": {
-              "value": {
-                "id": 3450,
+              "id": 3450,
+              "info": {
                 "name": "Rost",
                 "email": "rost@nora.tribe",
                 "gender": "male",
                 "status": "inactive"
               }
           }
+        }
+      ]
+    }
+```
+
+And, lets consider that the _destination_ new system exposes data in the
+following format:
+
+```json
+      "jsonapi": {
+        "version": 1.2,
+      },
+      "results": [
+        {
+            "id": 3453,
+            "name": "Aloy",
+            "email": "aloy@nora.tribe",
+            "gender": "female",
+            "status": "active"
+        },
+        {
+            "id": 3452,
+            "name": "Varl",
+            "email": "varl@nora.tribe",
+            "gender": "male",
+            "status": "active"
+        },
+        {
+            "id": 3450,
+            "name": "Rost",
+            "email": "rost@nora.tribe",
+            "gender": "male",
+            "status": "active"
         }
       ]
     }
@@ -157,14 +197,18 @@ source:
   type: json
   data: https://dev.legacy-system.com/api/v1/users
   # One-level up pointer where the data resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
-  selector: "/results/-/employees"
+  selector: "/results/-/employee"
+  # The field name that encapsulates the intended data for verification purpose.
+  # There is no need to provide the key information, if the data resides in the
+  # top-level.
+  key: "info"
   # Datasource basic authentication credentials. Note that the key is same as mentioned in the test specification. This is optional if the endpoint is publicly accessible.
   credential: source
 # The endpoint that returns the destination dataset.
 destination:
   type: json
   data: https://dev.new-system.com/api/v1/users
-  selector: "/employees"
+  selector: "/results"
   credential: destination
 tests:
   -
@@ -177,7 +221,10 @@ tests:
 
 ### Transform plugin
 
-There could be a scenario where instead of directly storing the data from source, it must be transformed in some way (say, whitespaces must be stripped) before storing it in the destination database. A QA engineer can write their own plugin, to validate the business logic that does the transformation.
+There could be a scenario where instead of directly storing the data from
+source, it must be transformed in some way (say, whitespaces must be stripped)
+before storing it in the destination database. A QA engineer can write their own
+plugin, to validate the business logic that does the transformation.
 
 The test case would look like this:
 
@@ -189,7 +236,11 @@ tests:
     destinationField: name
 ```
 
-The QA engineer must specify the plugin class inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must be same as the plugin name mentioned in the test case with the first character in upper case, i.e. `Trim`. The plugin class must implement `\Mdtt\Transform\Transform` interface.
+The QA engineer must specify the plugin class
+inside `tests/mdtt/src/Plugin/Transform`. The file name (and, class name) must
+be same as the plugin name mentioned in the test case with the first character
+in upper case, i.e. `Trim`. The plugin class must
+implement `\Mdtt\Transform\Transform` interface.
 
 ```php
 <?php
@@ -247,7 +298,9 @@ You can view all available options by doing this:
 
 ### Logs
 
-By default, the log files are created inside directory called `logs`. The directory will be present in the root of the test suite. The log files are named based on the datetime when the test is executed.
+By default, the log files are created inside directory called `logs`. The
+directory will be present in the root of the test suite. The log files are named
+based on the datetime when the test is executed.
 
 ## Features
 
