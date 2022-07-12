@@ -4,6 +4,8 @@ namespace Mdtt\LoadDefinition;
 
 interface Load
 {
+    public const DEFAULT_SPEC_LOCATION = 'tests/mdtt/spec.php';
+
     /**
      * Scans the provided pattern for test definitions.
      *
