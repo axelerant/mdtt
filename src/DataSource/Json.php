@@ -11,14 +11,33 @@ use Mdtt\Utility\DataSource\Json as JsonDataSourceUtility;
 class Json extends DataSource
 {
     private string $selector;
+
+    private ?string $key;
+
     private JsonDataSourceUtility $jsonDataSourceUtility;
+
     private Items|null $items;
+
     private ?string $username;
+
     private ?string $password;
+
     private ?string $protocol;
 
+    public function __construct(
+        string $data,
+        string $selector,
+        JsonDataSourceUtility $jsonDataSourceUtility,
+        string $key
+    ) {
+        parent::__construct($data);
+        $this->selector = $selector;
+        $this->jsonDataSourceUtility = $jsonDataSourceUtility;
+        $this->key = $key;
+    }
+
     /**
-     * @param string|null $username
+     * @param  string|null  $username
      */
     public function setUsername(?string $username): void
     {
@@ -26,7 +45,7 @@ class Json extends DataSource
     }
 
     /**
-     * @param string|null $password
+     * @param  string|null  $password
      */
     public function setPassword(?string $password): void
     {
@@ -34,21 +53,11 @@ class Json extends DataSource
     }
 
     /**
-     * @param string|null $protocol
+     * @param  string|null  $protocol
      */
     public function setProtocol(?string $protocol): void
     {
         $this->protocol = $protocol;
-    }
-
-    public function __construct(
-        string $data,
-        string $selector,
-        JsonDataSourceUtility $jsonDataSourceUtility
-    ) {
-        parent::__construct($data);
-        $this->selector = $selector;
-        $this->jsonDataSourceUtility = $jsonDataSourceUtility;
     }
 
     /**
@@ -66,8 +75,10 @@ class Json extends DataSource
             );
         }
 
-        foreach ($this->items as $item) {
-            yield $item;
+        foreach ($this->items as $key => $item) {
+            if (isset($this->key) && $key === $this->key) {
+                yield $item;
+            }
         }
     }
 }

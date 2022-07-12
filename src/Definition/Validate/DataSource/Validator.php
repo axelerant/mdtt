@@ -20,14 +20,16 @@ class Validator
     /**
      * Validates whether the datasource information in test definition is valid.
      *
-     * @param string $type
-     * @param array<string> $rawDataSourceDefinition
+     * @param  string  $type
+     * @param  array<string>  $rawDataSourceDefinition
      *
      * @return \Mdtt\DataSource\DataSource
      * @throws \Mdtt\Exception\SetupException
      */
-    public function validate(string $type, array $rawDataSourceDefinition): DataSource
-    {
+    public function validate(
+        string $type,
+        array $rawDataSourceDefinition
+    ): DataSource {
         if (!in_array($type, ["source", "destination"])) {
             throw new SetupException("Incorrect data source type is passed.");
         }
@@ -74,6 +76,7 @@ class Validator
                 $rawDataSourceDefinition['data'],
                 $rawDataSourceDefinition['selector'],
                 $this->jsonDataSourceUtility,
+                $rawDataSourceDefinition['key'] ?? null
             );
             $datasource->setUsername($username);
             $datasource->setPassword($password);
@@ -82,11 +85,14 @@ class Validator
             return $datasource;
         }
 
-        throw new SetupException(sprintf("Unexpected data source type %s and data source definition passed.", $type));
+        throw new SetupException(sprintf(
+            "Unexpected data source type %s and data source definition passed.",
+            $type
+        ));
     }
 
     /**
-     * @param array<string> $rawDataSourceDefinition
+     * @param  array<string>  $rawDataSourceDefinition
      *
      * @return void
      */
@@ -96,13 +102,16 @@ class Validator
         $isValid = $dbValidator->validate($rawDataSourceDefinition);
         if (!$isValid) {
             throw new SetupException(
-                sprintf("All information are not passed for %s", $rawDataSourceDefinition['type'])
+                sprintf(
+                    "All information are not passed for %s",
+                    $rawDataSourceDefinition['type']
+                )
             );
         }
     }
 
     /**
-     * @param array<string> $rawDataSourceDefinition
+     * @param  array<string>  $rawDataSourceDefinition
      *
      * @return void
      */
