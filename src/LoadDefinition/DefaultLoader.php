@@ -102,8 +102,10 @@ class DefaultLoader implements Load
         /** @var array<string> $sourceInformation */
         $sourceInformation = $yamlTestDefinition['source'];
         try {
-            $sourceData = $this->dataSourceValidator->validate("source",
-              $sourceInformation);
+            $sourceData = $this->dataSourceValidator->validate(
+                "source",
+                $sourceInformation
+            );
             $parsedTestDefinition->setSource($sourceData);
         } catch (SetupException $exception) {
             throw new SetupException($exception->getMessage());
@@ -121,8 +123,10 @@ class DefaultLoader implements Load
         /** @var array<string> $destinationInformation */
         $destinationInformation = $yamlTestDefinition['destination'];
         try {
-            $destinationData = $this->dataSourceValidator->validate("destination",
-              $destinationInformation);
+            $destinationData = $this->dataSourceValidator->validate(
+                "destination",
+                $destinationInformation
+            );
             $parsedTestDefinition->setDestination($destinationData);
         } catch (SetupException $exception) {
             throw new SetupException($exception->getMessage());
