@@ -28,7 +28,7 @@ class Json extends DataSource
         string $data,
         string $selector,
         JsonDataSourceUtility $jsonDataSourceUtility,
-        string $key
+        ?string $key
     ) {
         parent::__construct($data);
         $this->selector = $selector;
