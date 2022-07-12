@@ -6,5 +6,4 @@ namespace Mdtt\Exception;
 
 class FailFastException extends \RuntimeException
 {
-
 }

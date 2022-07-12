@@ -87,6 +87,7 @@ class Validator
                 $rawDataSourceDefinition['data'],
                 $rawDataSourceDefinition['selector'],
                 $this->jsonDataSourceUtility,
+                $rawDataSourceDefinition['key'] ?? null
             );
             $datasource->setUsername($username);
             $datasource->setPassword($password);
