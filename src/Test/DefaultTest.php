@@ -14,18 +14,29 @@ class DefaultTest extends Test
      */
     public function execute(array $sourceData, array $destinationData): bool
     {
-        if (!isset($sourceData[$this->getSourceField()])) {
+        $sourceFields = explode('/', $this->getSourceField());
+        $destinationFields = explode('/', $this->getDestinationField());
+
+        if (!isset($sourceData[$sourceFields[0]])) {
             throw new ExecutionException("Source field could not be found in the source data.");
         }
 
-        if (!isset($destinationData[$this->getDestinationField()])) {
+        if (!isset($destinationData[$destinationFields[0]])) {
             throw new ExecutionException("Destination field could not be found in the destination data.");
         }
 
         /** @var string|int $sourceValue */
-        $sourceValue = $sourceData[$this->getSourceField()];
+        $sourceValue = array_reduce(
+            $sourceFields,
+            static fn (array $carry, string $key) => $carry[$key],
+            $sourceData
+        );
         /** @var string|int $destinationValue */
-        $destinationValue = $destinationData[$this->getDestinationField()];
+        $destinationValue = array_reduce(
+            $destinationFields,
+            static fn (array $carry, string $key) => $carry[$key],
+            $destinationData
+        );
 
         if ($this->getTransform() !== null) {
             $sourceValue = $this->getTransform()->process($sourceValue);
