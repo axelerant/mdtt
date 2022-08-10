@@ -103,6 +103,83 @@ tests:
 
 #### JSON
 
+Consider that the data is exposed by the _source_ legacy system in the following format:
+
+```json
+{
+      "jsonapi": {
+        "version": 1.2,
+      },
+      "results": [
+        {
+          "employee": {
+              "id": 3453,
+              "info": {
+                "name": "Aloy",
+                "email": "aloy@nora.tribe",
+                "gender": "female",
+                "status": "active"
+              }
+          }
+        },
+        {
+          "employee": {
+              "id": 3452,
+              "info": {
+                "name": "Varl",
+                "email": "varl@nora.tribe",
+                "gender": "male",
+                "status": "active"
+              }
+          }
+        },
+        {
+          "employee": {
+              "id": 3450,
+              "info": {
+                "name": "Rost",
+                "email": "rost@nora.tribe",
+                "gender": "male",
+                "status": "inactive"
+              }
+          }
+        }
+      ]
+    }
+```
+
+Consider that the _destination_ new system exposes data in the following format:
+
+```json
+      "jsonapi": {
+        "version": 1.2,
+      },
+      "results": [
+        {
+            "id": 3453,
+            "name": "Aloy",
+            "email": "aloy@nora.tribe",
+            "gender": "female",
+            "status": "active"
+        },
+        {
+            "id": 3452,
+            "name": "Varl",
+            "email": "varl@nora.tribe",
+            "gender": "male",
+            "status": "active"
+        },
+        {
+            "id": 3450,
+            "name": "Rost",
+            "email": "rost@nora.tribe",
+            "gender": "male",
+            "status": "active"
+        }
+      ]
+    }
+```
+
 ```yaml
 id: validate_public_apis
 description: Validate public apis
@@ -111,22 +188,24 @@ group: migration_validation
 source:
   type: json
   data: https://dev.legacy-system.com/api/v1/users
-  # The pointer where all the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
-  selector: "/results/-/employees"
+  # The pointer where the list of items resides. Refer https://github.com/halaxa/json-machine#what-is-json-pointer-anyway for examples
+  selector: "/results"
   # Datasource basic authentication credentials. Note that the key is same as mentioned in the test specification. This is optional if the endpoint is publicly accessible.
   credential: source
 # The endpoint that returns the destination dataset.
 destination:
   type: json
   data: https://dev.new-system.com/api/v1/users
-  selector: "/results/-/employees"
+  selector: "/results"
   credential: destination
 tests:
   -
-    sourceField: name
+    # `/` separated field which you want to test.
+    # This is applicable when the value you want to test is in nested format.
+    sourceField: "employee/info/name"
     destinationField: name
   -
-    sourceField: email
+    sourceField: "employee/info/email"
     destinationField: email
 ```
 
