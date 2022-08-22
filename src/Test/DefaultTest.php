@@ -45,6 +45,7 @@ class DefaultTest extends Test
         Assert::assertSame(
             $sourceValue,
             $destinationValue,
+            sprintf("Source: `%s`\nDestination: `%s`", $sourceValue, $destinationValue)
         );
 
         return true;
