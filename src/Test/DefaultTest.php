@@ -9,6 +9,7 @@ use PHPUnit\Framework\Assert;
 
 class DefaultTest extends Test
 {
+
     /**
      * @inheritDoc
      */
@@ -17,11 +18,11 @@ class DefaultTest extends Test
         $sourceFields = explode('/', $this->getSourceField());
         $destinationFields = explode('/', $this->getDestinationField());
 
-        if (!isset($sourceData[$sourceFields[0]])) {
+        if (!$this->issetField($sourceData, $sourceFields)) {
             throw new ExecutionException("Source field could not be found in the source data.");
         }
 
-        if (!isset($destinationData[$destinationFields[0]])) {
+        if (!$this->issetField($destinationData, $destinationFields)) {
             throw new ExecutionException("Destination field could not be found in the destination data.");
         }
 
@@ -49,5 +50,23 @@ class DefaultTest extends Test
         );
 
         return true;
+    }
+
+    /**
+     * @param  array<string, numeric-string|array<string, numeric-string>>|numeric-string  $data
+     * @param  array<string>  $fields
+     *
+     * @return bool
+     */
+    private function issetField(mixed $data, array $fields): bool
+    {
+        $key = array_shift($fields);
+        if ($key === null) {
+            return true;
+        }
+
+        $test = isset($data[$key]);
+
+        return $test && $this->issetField($data[$key], $fields);
     }
 }
