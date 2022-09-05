@@ -75,10 +75,11 @@ abstract class Test
     /**
      * Compare the source and the destination data.
      *
-     * @param array<scalar> $sourceData
-     * @param array<scalar> $destinationData
+     * @param array<string, numeric-string|array<string, numeric-string>> $sourceData
+     * @param array<string, numeric-string|array<string, numeric-string>> $destinationData
      *
      * @return bool
+     * @throws \Mdtt\Exception\ExecutionException
      */
     abstract public function execute(array $sourceData, array $destinationData): bool;
 }

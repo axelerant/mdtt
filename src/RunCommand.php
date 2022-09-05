@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Mdtt;
 
+use Exception;
+use LogicException;
 use Mdtt\Definition\Definition;
 use Mdtt\Exception\ExecutionException;
 use Mdtt\Exception\FailFastException;
 use Mdtt\LoadDefinition\Load;
 use Mdtt\Notification\Email;
+use MultipleIterator;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use Psr\Log\LoggerInterface;
@@ -64,7 +67,7 @@ class RunCommand extends Command
         OutputInterface $output
     ): int {
         if (!$output instanceof ConsoleOutputInterface) {
-            throw new \LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
+            throw new LogicException('This command accepts only an instance of "ConsoleOutputInterface".');
         }
 
         $progress = $output->section();
@@ -97,7 +100,7 @@ class RunCommand extends Command
         // Tests run.
         try {
             $this->doRunTests($definitions, $isSmokeTest, $isFailFast, $report, $progress);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $progress->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
 
             $this->finalizeTestRun($report, $testSummary, $notificationEmail);
@@ -142,7 +145,7 @@ class RunCommand extends Command
         if ($notificationEmail !== null) {
             try {
                 $this->email->sendMessage("Test completed", $readableReport, $notificationEmail);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $testSummary->writeln($exception->getMessage(), OutputInterface::VERBOSITY_QUIET);
             }
         }
@@ -181,7 +184,7 @@ class RunCommand extends Command
                   $this->runTests($definition, $report, $progress, $isFailFast);
             } catch (FailFastException) {
                 break;
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 throw new ExecutionException($exception->getMessage());
             }
         }
@@ -219,7 +222,7 @@ class RunCommand extends Command
             if ($isFailFast) {
                 throw new FailFastException();
             }
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             throw new ExecutionException($exception->getMessage());
         } finally {
             $report->setSourceRowCount($report->getSourceRowCount() + $sourceRowCounts);
@@ -240,7 +243,7 @@ class RunCommand extends Command
         $destinationIterator = $destination->getIterator();
 
         // Combining the iterators is required so that the tests can be run for every returned item.
-        $combinedIterators = new \MultipleIterator();
+        $combinedIterators = new MultipleIterator();
         $combinedIterators->attachIterator($sourceIterator);
         $combinedIterators->attachIterator($destinationIterator);
 
@@ -269,20 +272,19 @@ class RunCommand extends Command
                     $report->incrementNumberOfAssertions();
                     $test->execute($sourceValue, $destinationValue);
                     $progress->write('<info>P</info>');
-                } catch (ExpectationFailedException) {
+                } catch (ExpectationFailedException $exception) {
                     $report->incrementNumberOfFailures();
                     $progress->write('<error>F</error>');
 
                     $this->logger->emergency('Source and destination does not match.', [
                       'Definition' => $definition->getId(),
-                      'Source' => $sourceValue[$test->getSourceField()],
-                      'Destination' => $destinationValue[$test->getDestinationField()],
+                      'Error' => $exception->getMessage(),
                     ]);
 
                     if ($isFailFast) {
                         throw new FailFastException();
                     }
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     throw new ExecutionException($exception->getMessage());
                 }
             }
