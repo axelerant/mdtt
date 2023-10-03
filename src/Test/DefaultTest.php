@@ -58,7 +58,7 @@ class DefaultTest extends Test
      * a specified offset (string key) within them. It performs recursive checks on
      * nested arrays to ensure that the offset exists at each level.
      *
-     * @param array<string, numeric-string|array<string,numeric-string>> $data
+     * @param array<string, numeric-string|array<string, numeric-string>> $data
      *     The data array to check for the offset in.
      * @param array<string> $fields
      *     An array of string keys representing the path to the desired offset.
@@ -66,6 +66,9 @@ class DefaultTest extends Test
      * @return bool
      *     Returns `true` if the specified offset exists in the nested array,
      *     `false` otherwise.
+     *
+     * @throws InvalidArgumentException
+     *     If the input data structure is not as expected.
      */
     private function issetField(array $data, array $fields): bool
     {
@@ -83,11 +86,38 @@ class DefaultTest extends Test
         }
 
         // Make sure that the key value is an array of strings
-        if (!is_array($data[$key]) || !array_is_list($data[$key])) {
-            return false;
+        if (!is_array($data[$key]) || !is_list_of_strings($data[$key])) {
+            throw new InvalidArgumentException("Data structure is not as expected.");
         }
 
         // Recursively check the next level
         return $this->issetField($data[$key], $fields);
+    }
+
+    /**
+     * Checks if an array contains a list of strings.
+     *
+     * @param array $value
+     *     The array to check.
+     *
+     * @return bool
+     *     Returns `true` if the array contains a list of strings, `false` otherwise.
+     *
+     * @throws InvalidArgumentException
+     *     If the input value is not an array.
+     */
+    private function is_list_of_strings(array $value): bool
+    {
+        if (!is_array($value)) {
+            throw new InvalidArgumentException("Input must be an array.");
+        }
+
+        foreach ($value as $item) {
+            if (!is_string($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
