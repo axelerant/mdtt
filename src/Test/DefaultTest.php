@@ -58,7 +58,7 @@ class DefaultTest extends Test
      * a specified offset (string key) within them. It performs recursive checks on
      * nested arrays to ensure that the offset exists at each level.
      *
-     * @param array<string, numeric-string|array<string, numeric-string>>|numeric-string $data
+     * @param array<string,numeric-string|array<string,numeric-string>> $data
      *     The data array to check for the offset in.
      * @param array<string> $fields
      *     An array of string keys representing the path to the desired offset.
@@ -66,17 +66,9 @@ class DefaultTest extends Test
      * @return bool
      *     Returns `true` if the specified offset exists in the nested array,
      *     `false` otherwise.
-     *
-     * Used a combination of type hinting and explicit checks to assist PHPStan
-     * in understanding the types involved and resolving static analysis errors.
      */
-    private function issetField(mixed $data, array $fields): bool
+    private function issetField(array $data, array $fields): bool
     {
-        // Check if $data is an array
-        if (!is_array($data)) {
-            return false;
-        }
-
         // Get the next key to check
         $key = array_shift($fields);
 
