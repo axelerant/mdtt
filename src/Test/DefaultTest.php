@@ -107,7 +107,7 @@ class DefaultTest extends Test
      * @throws InvalidArgumentException
      *     If the input value is not an array.
      */
-    private function isListOfStrings (array $value): bool
+    private function isListOfStrings(array $value): bool
     {
         if (!is_array($value)) {
             throw new InvalidArgumentException("Input must be an array.");
