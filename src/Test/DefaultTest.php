@@ -86,7 +86,7 @@ class DefaultTest extends Test
         }
 
         // Make sure that the key value is an array of strings
-        if (!is_array($data[$key]) || !is_list_of_strings($data[$key])) {
+        if (!is_array($data[$key]) || !isListOfStrings($data[$key])) {
             throw new InvalidArgumentException("Data structure is not as expected.");
         }
 
@@ -106,7 +106,7 @@ class DefaultTest extends Test
      * @throws InvalidArgumentException
      *     If the input value is not an array.
      */
-    private function is_list_of_strings(array $value): bool
+    private function isListOfStrings(array $value): bool
     {
         if (!is_array($value)) {
             throw new InvalidArgumentException("Input must be an array.");
