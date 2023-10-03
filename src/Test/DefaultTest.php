@@ -58,7 +58,7 @@ class DefaultTest extends Test
      * a specified offset (string key) within them. It performs recursive checks on
      * nested arrays to ensure that the offset exists at each level.
      *
-     * @param array<string,numeric-string|array<string,numeric-string>> $data
+     * @param array<string, numeric-string|array<string,numeric-string>> $data
      *     The data array to check for the offset in.
      * @param array<string> $fields
      *     An array of string keys representing the path to the desired offset.
@@ -79,6 +79,11 @@ class DefaultTest extends Test
 
         // Check if the key exists in the data array
         if (!array_key_exists($key, $data)) {
+            return false;
+        }
+
+        // Make sure that the key value is an array of strings
+        if (!is_array($data[$key]) || !array_is_list($data[$key])) {
             return false;
         }
 
