@@ -6,7 +6,7 @@ namespace Mdtt\Test;
 
 use Mdtt\Exception\ExecutionException;
 use PHPUnit\Framework\Assert;
-use Mdtt\Test\InvalidArgumentException;
+use Mdtt\Exception\InvalidArgumentException;
 
 class DefaultTest extends Test
 {
@@ -87,7 +87,7 @@ class DefaultTest extends Test
         }
 
         // Make sure that the key value is an array of strings
-        if (!is_array($data[$key]) || !isListOfStrings($data[$key])) {
+        if (!is_array($data[$key]) || !$this->isListOfStrings($data[$key])) {
             throw new InvalidArgumentException("Data structure is not as expected.");
         }
 
@@ -107,7 +107,7 @@ class DefaultTest extends Test
      * @throws InvalidArgumentException
      *     If the input value is not an array.
      */
-    public function isListOfStrings(array $value): bool
+    private function isListOfStrings (array $value): bool
     {
         if (!is_array($value)) {
             throw new InvalidArgumentException("Input must be an array.");
