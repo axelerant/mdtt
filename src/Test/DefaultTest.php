@@ -98,7 +98,7 @@ class DefaultTest extends Test
     /**
      * Checks if an array contains a list of strings.
      *
-     * @param array $value
+     * @param iterable<string> $value
      *     The array to check.
      *
      * @return bool
@@ -107,7 +107,7 @@ class DefaultTest extends Test
      * @throws InvalidArgumentException
      *     If the input value is not an array.
      */
-    private function isListOfStrings(array $value): bool
+    private function isListOfStrings(iterable $value): bool
     {
         if (!is_array($value)) {
             throw new InvalidArgumentException("Input must be an array.");
