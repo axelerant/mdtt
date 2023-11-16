@@ -6,7 +6,7 @@ namespace Mdtt\Test;
 
 use Mdtt\Exception\ExecutionException;
 use PHPUnit\Framework\Assert;
-use Mdtt\Exception\InvalidArgumentException;
+use InvalidArgumentException;
 
 class DefaultTest extends Test
 {
@@ -87,7 +87,7 @@ class DefaultTest extends Test
         }
 
         // Make sure that the key value is an array of strings
-        if (!is_array($data[$key]) || !$this->isListOfStrings($data[$key])) {
+        if (!is_array($data[$key]) || !$this->isArrayOfStrings($data[$key])) {
             throw new InvalidArgumentException("Data structure is not as expected.");
         }
 
@@ -96,18 +96,18 @@ class DefaultTest extends Test
     }
 
     /**
-     * Checks if an array contains a list of strings.
+     * Checks if an iterable value is an array containing only strings.
      *
      * @param iterable<string> $value
      *     The array to check.
      *
      * @return bool
-     *     Returns `true` if the array contains a list of strings, `false` otherwise.
+     *     Returns `true` if the iterable value is an array containing only strings, `false` otherwise.
      *
      * @throws InvalidArgumentException
-     *     If the input value is not an array.
+     *     If the input value is not an array or contains non-string elements..
      */
-    private function isListOfStrings(iterable $value): bool
+    private function isArrayOfStrings(iterable $value): bool
     {
         if (!is_array($value)) {
             throw new InvalidArgumentException("Input must be an array.");
